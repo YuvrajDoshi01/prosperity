@@ -1,0 +1,28 @@
+{
+  "summary": "s36_medallion exhaustive hyperparam sweep across 13 dimensions x 3 days",
+  "date": "2026-03-21",
+  "total_configs_tested": 85,
+  "baseline_total": 33610,
+  "combined_optimal_total": 33820,
+  "delta": 209,
+  "conclusion": "Strategy is already at optimal. Only OBI_FV_SHIFT=0.0 improves BT (+210) but website prefers 0.5 (+39 proven). Keep 0.5 for submissions.",
+  "parameters_unchanged_at_optimal": [
+    "CARRY_WIDE_OFFSET = 3",
+    "CARRY_THRESHOLD = 0.5",
+    "TERMINAL_TIMESTAMP = 900000",
+    "TERMINAL_POSITION_THRESHOLD = 10",
+    "REGRESSION_INTERCEPT = 2.208667"
+  ],
+  "parameters_with_zero_sensitivity": [
+    "TRADE_FLOW_COEF (0.0-3.0 all identical — signal has no BT effect)",
+    "TRADE_FLOW_WINDOW (3-15 all identical)",
+    "TRADE_FLOW_NORM (5.0-30.0 all identical)",
+    "CARRY_TRIGGER (2-5 all identical, degrades at 6+)",
+    "TOMATO_POST_SKEW_THRESHOLD (20-80 all identical)",
+    "EMERALD_AGGRESSION_THRESHOLD (20-50 all identical on BT)"
+  ],
+  "website_vs_backtester_conflicts": {
+    "OBI_FV_SHIFT": "BT optimal=0.0, website optimal=0.5 (CSV vol != website vol)",
+    "TRADE_FLOW_COEF": "BT=zero effect, website=+207 (trade flow only works with real taker fills)"
+  }
+}

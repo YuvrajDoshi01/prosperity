@@ -1,0 +1,6 @@
+v5_5200e_3 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_5200e_4 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_5200e_5 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_5200e_6 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_5200e_7 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_5200e_8 | 1k_d3=Total profit: 1,552 | def=Total profit: 127,124 | imc=Total profit: 117,680

@@ -1,0 +1,215 @@
+================================================================================
+MULTI-STRIKE SPREAD SIGNAL ANALYSIS
+Can the VEV_4000 spread=22 signal (vev3.py) generalize to other voucher strikes?
+================================================================================
+Date: 2026-04-26
+Data: Round 3, days 0/1/2, 10k ticks each (30k total)
+Method: Forward VFE returns after spread-widen events per strike
+Source: voucher_spread_signal_analysis.py → voucher_spread_signal_results.txt
+
+================================================================================
+ANSWER: YES — the signal is UNIVERSAL, not VEV_4000-specific.
+================================================================================
+
+Every voucher strike from VEV_4000 through VEV_5300 shows statistically
+significant negative VFE forward returns after spread-widen events.
+20 of 60 hypotheses survive Bonferroni correction at 1% FWER.
+
+The mechanism: when an option's bid-ask spread widens beyond its normal
+(mode) value, it indicates the MM bot is repricing — which happens at
+VFE local peaks. Shorting VFE at these moments captures mean reversion.
+
+================================================================================
+1. STRIKE RANKING BY SIGNAL QUALITY
+================================================================================
+
+Tier 1 — Strongest signals (implement immediately):
+
+  VEV_5200 (mode=3, widen=4)
+  ├── BEST per-event: mean@200 = -7.93, hit rate = 76.0%
+  ├── BEST peak-bias: 66.4% of events at VFE > trailing avg
+  ├── With consec>=2: mean@200 = -9.60, hit = 81.3% (203 events)
+  ├── With consec>=3: mean@200 = -11.73, hit = 87.5% (49 events, small N)
+  ├── Only 1,178 events/3-day (~393/day) — fewer but cleanest
+  └── 63% unique vs VEV_4000 timestamps → additive
+
+  VEV_4500 (mode=16, widen=17)
+  ├── Nearly identical to VEV_4000: mean@200 = -5.37, hit = 68.3%
+  ├── MORE events: 3,788 vs 3,147 (20% more than VEV_4000)
+  ├── 96% unique timestamps vs VEV_4000 → almost zero overlap!
+  ├── With consec>=3: mean@200 = -7.54, hit = 78.5% (664 events)
+  └── Free second signal channel — no cost to add
+
+Tier 2 — Good additive value:
+
+  VEV_5000 (mode=6, widen=7)
+  ├── Highest t-statistic overall: t=-30.83 at h=200
+  ├── Most events among clean signals: 5,162 (1,721/day)
+  ├── mean@200 = -4.91, hit = 66.6%
+  ├── 71% unique vs VEV_4000
+  └── Slight dilution per-event but massive sample → reliable
+
+  VEV_5100 (mode=4, widen=5)
+  ├── Huge event count: 10,225 (3,408/day)
+  ├── Weaker per-event: mean@200 = -2.98, hit = 59.9%
+  ├── With consec>=5: mean@200 = -7.21, hit = 74.0% (1,212 events) ← sweet spot
+  ├── 81% unique vs VEV_4000
+  └── Best used as CONFIRMATION in ensemble, not standalone
+
+Tier 3 — Moderate:
+
+  VEV_5300 (mode=2, widen=3)
+  ├── mean@200 = -3.76, hit = 61.6%
+  ├── With consec>=3: mean@200 = -6.63, hit = 69.5% (282 events)
+  ├── 80% unique vs VEV_4000
+  └── Decent but lower hit rate than Tier 1/2
+
+IGNORE — Noise:
+
+  VEV_5400 (mode=1): 43% of ticks are "widen" → fires constantly, hit=50.9%
+  VEV_5500 (mode=1): 18% widen rate, hit=51.8% — barely above coin flip
+  VEV_6000/6500: spread=1 always, zero information
+
+================================================================================
+2. KEY DISCOVERY: VEV_5200 IS BETTER THAN VEV_4000
+================================================================================
+
+Direct comparison (consec>=1):
+
+  Metric              VEV_4000    VEV_5200    Delta
+  ────────────────────────────────────────────────────
+  Mean return @200    -5.33       -7.93       +49% better
+  Hit rate @200       67.3%       76.0%       +8.7pp
+  Mean return @100    -2.70       -4.54       +68% better
+  Hit rate @100       61.4%       70.6%       +9.2pp
+  Mean return @50     -1.47       -2.57       +75% better
+  Hit rate @50        59.0%       65.0%       +6.0pp
+  Peak-bias           62.8%       66.4%       +3.6pp
+  Events/day          ~1,049      ~393        fewer but cleaner
+
+VEV_5200 is near-ATM (strike=5200, VFE~5000-5200, delta~0.4-0.5). Its spread
+rarely widens (only 4.4% of day2 ticks), so when it DOES widen, it's a
+stronger regime signal.
+
+WHY is VEV_5200 better?
+- Near-ATM options have highest gamma → most sensitive to directional moves
+- The MM bot reprices ATM options more aggressively at VFE peaks
+- Spread=3→4 is a 33% increase (vs 21→22 = 4.8% for VEV_4000)
+- Proportional spread change matters more than absolute
+
+================================================================================
+3. MIRROR SIGNAL: SPREAD NARROWING = LONG
+================================================================================
+
+The symmetric pattern exists. When spreads narrow BELOW mode, VFE is at a
+local trough and will rise:
+
+  Strike     Narrow value    Mean@50    t-stat    Interpretation
+  ─────────────────────────────────────────────────────────────────
+  VEV_4000   spread=20       +1.84      +15.3     BUY signal
+  VEV_4500   spread=15       +1.75      +16.4     BUY signal
+  VEV_5000   spread=5        +2.19      +15.3     BUY signal
+  VEV_5200   spread=2        +1.41      +13.3     BUY signal
+  VEV_5300   spread=1        +1.69      +7.2      BUY signal
+
+This could replace the bottom-flip logic in vev3.py with a more robust,
+multi-strike confirmation. Currently vev3 uses VFE price quantile for
+the bottom flip — spread narrowing across multiple strikes would be a
+stronger signal.
+
+================================================================================
+4. CROSS-STRIKE CORRELATION: LOW → ENSEMBLE IS VALUABLE
+================================================================================
+
+Jaccard similarity between widen-event timestamps:
+
+  VEV_4000 vs VEV_4500: 0.03 (97% unique — different regime)
+  VEV_4000 vs VEV_5200: 0.11 (89% unique)
+  VEV_4500 vs VEV_5200: 0.11 (89% unique)
+  VEV_5100 vs VEV_5400: 0.26 (highest, but still 74% unique)
+
+Low correlation means:
+1. Signals are NOT redundant — different strikes detect different peaks
+2. A multi-strike ensemble captures more events
+3. Simultaneous widening across K>=2 strikes → stronger confirmation
+
+Practical ensemble approach:
+  IF widen on VEV_4000 AND widen on VEV_5200 → strongest short signal
+  IF widen on VEV_4500 AND widen on VEV_5000 → secondary confirmation
+  Require 2+ Tier 1/2 strikes widening → filter out false positives
+
+================================================================================
+5. PRACTICAL IMPLEMENTATION RECOMMENDATIONS
+================================================================================
+
+A. UPGRADE vev3.py SIGNAL (drop-in replacement):
+
+  Current: VEV_4000 spread==22, consec>=3
+  Proposed: VEV_5200 spread==4, consec>=1 (or consec>=2 for safety)
+
+  Expected improvement: +49% per-event return, +9pp hit rate.
+  Caveat: 63% fewer events per day (393 vs 1049).
+
+B. MULTI-STRIKE ENSEMBLE (higher capacity):
+
+  Count how many Tier 1+2 strikes are widening simultaneously:
+    score = sum(1 for K in [4000, 4500, 5000, 5200] if spread[K] > mode[K])
+
+  Entry: score >= 2 → short VFE to -200
+  Exit: score == 0 AND spread narrowing on 2+ strikes → flip long
+
+  This captures more events (union of 4 strikes) with higher precision
+  (confirmation reduces false positives).
+
+C. REPLACE BOTTOM-FLIP WITH SPREAD NARROWING:
+
+  Current vev3: exit short when VFE <= 8th percentile of 500-tick window
+  Proposed: exit short when spread NARROWS on 2+ strikes simultaneously
+
+  Spread narrowing is a leading indicator (MM repricing), while price
+  quantile is a lagging indicator (requires VFE to already be low).
+
+  Expect: earlier entry into flip → capture more of the recovery move
+
+D. CAPACITY CONSTRAINT:
+
+  VFE limit = 200 contracts. Can only hold ONE directional position.
+  Multi-strike signals don't multiply positions — they improve TIMING.
+  The binding constraint is always: how many directional round-trips
+  per day, and what's the average profit per trip.
+
+  vev3 current: ~2-4 round trips/day, ~$5-10k/trip → $20-30k/day
+  With better entry timing: same trips but +30-50% per trip
+
+================================================================================
+6. SIGNALS TO AVOID
+================================================================================
+
+VEV_5400: mode=1, widen fires 38% of ticks. Signal-to-noise ratio is
+essentially zero (hit rate 50.9%). The spread toggles between 1 and 2
+as a structural feature of the book, not a regime indicator.
+
+VEV_5500: Same issue, slightly less noisy (widen 15% of ticks) but still
+hit rate only 51.8%. Not worth the implementation complexity.
+
+VEV_6000/6500: Constant spread=1, zero information content.
+
+VEV_4500 as standalone: While the signal quality matches VEV_4000, the
+VEV_4500 market is essentially dead (1 trade in 30k ticks). The spread
+data is from the MM bot quotes, which are reliable, but there's no
+market validation of the book quality. Use as CONFIRMATION only.
+
+================================================================================
+7. NEXT STEPS (Priority order)
+================================================================================
+
+1. Build ensemble scorer in vev3.py: count widen events across 4000/4500/5000/5200
+2. Test entry on score>=2 (conservative) vs score>=1 (aggressive)
+3. Replace bottom-flip with spread-narrowing exit
+4. Backtest 10k 3-day and compare to current vev3 ($67k baseline)
+5. If ensemble wins, integrate into r3_combined_v23.py
+
+Note: All analysis is on backtester CSVs (30k ticks across 3 days).
+Website may differ. But the signal is structural (option MM repricing
+mechanics) rather than statistical (fitted coefficients), so it should
+be robust to data differences.

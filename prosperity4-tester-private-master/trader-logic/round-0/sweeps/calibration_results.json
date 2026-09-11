@@ -1,0 +1,126 @@
+{
+  "default": {
+    "pearson": 0.39532195809548887,
+    "spearman": 0.7714285714285715,
+    "slope": 0.4762525822324156,
+    "intercept": 1138.5562406040226,
+    "rmse": 149.5896475887291,
+    "local": [
+      3455,
+      3348,
+      3306,
+      3364,
+      3026,
+      3370
+    ],
+    "website": [
+      2857,
+      2855,
+      2407,
+      2676,
+      2648,
+      2851
+    ],
+    "names": [
+      "s3_carry.py",
+      "s25_training_only.py",
+      "s27_cartesian_optimal.py",
+      "experiments/s19_hybrid_fv.py",
+      "experiments/s18_partial_clear.py",
+      "early_versions/s2_tradeflow.py"
+    ]
+  },
+  "worse": {
+    "pearson": 0.472905630926523,
+    "spearman": 0.7714285714285715,
+    "slope": 0.5980219909055132,
+    "intercept": 770.4008005828489,
+    "rmse": 143.49404400834314,
+    "local": [
+      3401,
+      3294,
+      3224,
+      3298,
+      2989,
+      3311
+    ],
+    "website": [
+      2857,
+      2855,
+      2407,
+      2676,
+      2648,
+      2851
+    ],
+    "names": [
+      "s3_carry.py",
+      "s25_training_only.py",
+      "s27_cartesian_optimal.py",
+      "experiments/s19_hybrid_fv.py",
+      "experiments/s18_partial_clear.py",
+      "early_versions/s2_tradeflow.py"
+    ]
+  },
+  "taker_sim": {
+    "pearson": 0.4083638865298338,
+    "spearman": 0.48571428571428577,
+    "slope": 0.6600236391095913,
+    "intercept": 410.20409525686483,
+    "rmse": 148.65756113704919,
+    "local": [
+      3545,
+      3545,
+      3478,
+      3556,
+      3276,
+      3558
+    ],
+    "website": [
+      2857,
+      2855,
+      2407,
+      2676,
+      2648,
+      2851
+    ],
+    "names": [
+      "s3_carry.py",
+      "s25_training_only.py",
+      "s27_cartesian_optimal.py",
+      "experiments/s19_hybrid_fv.py",
+      "experiments/s18_partial_clear.py",
+      "early_versions/s2_tradeflow.py"
+    ]
+  },
+  "taker_worse": {
+    "pearson": 0.6386490473157976,
+    "spearman": 0.48571428571428577,
+    "slope": 1.737511240658625,
+    "intercept": -3055.7665043877314,
+    "rmse": 125.31694602627692,
+    "local": [
+      3358,
+      3358,
+      3276,
+      3358,
+      3208,
+      3372
+    ],
+    "website": [
+      2857,
+      2855,
+      2407,
+      2676,
+      2648,
+      2851
+    ],
+    "names": [
+      "s3_carry.py",
+      "s25_training_only.py",
+      "s27_cartesian_optimal.py",
+      "experiments/s19_hybrid_fv.py",
+      "experiments/s18_partial_clear.py",
+      "early_versions/s2_tradeflow.py"
+    ]
+  }
+}

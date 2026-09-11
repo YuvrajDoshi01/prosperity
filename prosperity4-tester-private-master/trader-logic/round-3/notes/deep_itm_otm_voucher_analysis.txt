@@ -1,0 +1,376 @@
+DEEP ITM & FAR OTM VOUCHER ANALYSIS — VEV_4000, VEV_4500, VEV_6000, VEV_6500
+===============================================================================
+Date: 2026-04-26
+Status: Analysis only, no code changes
+
+========================================================================
+PART 1: RAW MICROSTRUCTURE DATA
+========================================================================
+
+Reference: VFE spot = 5246-5255 (mean across 3 days), range 5198-5300.
+
+── VEV_4000 (Deep ITM, intrinsic ~1246) ──────────────────────────────
+
+  Day  Mid Mean  Mid Std   Spread(mode)  L1 Vol  Trades  Vol/Day  Taker Dir
+  ---  --------  -------   ------------  ------  ------  -------  ---------
+  0    1246.5    13.7      21 (79.8%)    10.9    172     351      52/48 balanced
+  1    1248.4    14.6      21 (79.4%)    10.9    164     333      45/55 balanced
+  2    1255.4    17.0      21 (74.1%)    10.9    128     256      50/50 balanced
+
+  Spread distribution: 21 (75-80%), 20 (8-12%), 22 (7-16%), 9-12 (1.8%)
+  Time value: mean = 0.01, std = 0.82. ZERO theta decay within day.
+  Delta: ~1.0 (tracks VFE tick-for-tick, std matches VFE exactly).
+  Bot quotes: bid ≈ intrinsic - 10.4, ask ≈ intrinsic + 10.4 (spread ~21).
+  Trade size: uniform {1, 2, 3}, mean 2.0, inter-arrival ~6-8 seconds.
+
+── VEV_4500 (Deep ITM, intrinsic ~747) ───────────────────────────────
+
+  Day  Mid Mean  Mid Std   Spread(mode)  L1 Vol  Trades  Vol/Day  Taker Dir
+  ---  --------  -------   ------------  ------  ------  -------  ---------
+  0    746.5     13.7      16 (75.0%)    8.9     0       0        N/A
+  1    748.4     14.6      16 (74.8%)    8.9     1       1        N/A
+  2    755.4     17.0      16 (68.7%)    8.9     0       0        N/A
+
+  Spread distribution: 16 (69-75%), 15 (10-15%), 17 (8-20%), 7-9 (1.8%)
+  Time value: mean = 0.01. ZERO theta decay.
+  Delta: ~1.0.
+  Bot quotes: bid ≈ intrinsic - 7.9, ask ≈ intrinsic + 7.9 (spread ~16).
+  ** ZERO taker flow. 1 total trade in 30,000 ticks across 3 days. **
+
+── VEV_6000 (Far OTM, intrinsic = 0 always) ─────────────────────────
+
+  Day  Mid     Spread  L1 Vol  Trades  Vol/Day  Taker Dir
+  ---  ------  ------  ------  ------  -------  ---------
+  0    0.5     1       22.5    91      320      100% SELL at 0
+  1    0.5     1       22.5    98      345      100% SELL at 0
+  2    0.5     1       22.5    95      337      100% SELL at 0
+
+  Book: CONSTANT. Bid=0, ask=1, mid=0.5. Never changes. Ever.
+  L1 vol: bell-shaped 10-35 (bid), 15-30 (ask). Single level only.
+  Trade size: mean 3.5, range 1-7. Every trade is a SELL AT 0.
+  No within-day variation in any metric. Pure deterministic bot.
+
+── VEV_6500 (Far OTM, intrinsic = 0 always) ─────────────────────────
+
+  IDENTICAL to VEV_6000 except:
+  - L1 vol: 15.5 (vs 22.5 for 6000). Smaller book.
+  - 100% timestamp synchronization with VEV_6000 trades.
+  - 100% quantity match at every timestamp.
+  ** This is the SAME taker bot hitting both 6000 and 6500 simultaneously. **
+
+========================================================================
+PART 2: WHAT THE CURRENT STRATEGY DOES
+========================================================================
+
+VEV_4000 — Deep ITM theta carry MM:
+  Code: bid at min(intrinsic-1, bb+1), ask at max(intrinsic+1, ba-1)
+  Since bb ≈ intrinsic-10.4, min(intrinsic-1, intrinsic-9.4) = intrinsic-9.4 = bb+1
+  Since ba ≈ intrinsic+10.4, max(intrinsic+1, intrinsic+9.4) = intrinsic+9.4 = ba-1
+  Effective: bid at bb+1, ask at ba-1. Size 30, cap 100.
+  Our spread = ba-1 - bb-1 = 21 - 2 = 19 ticks.
+  All taker flow goes to us (best bid/ask by 1 tick).
+
+  BT PnL: Day 0: $3,039. Day 1: $3,367. Day 2: $2,437. Mean $2,948.
+
+VEV_4500 — Same deep ITM theta carry MM:
+  Same logic: posts at bb+1/ba-1. Size 30, cap 100.
+  BT PnL: $0 on all 3 days (zero taker trades to match against).
+
+VEV_6000 — SKIPPED (in VOUCHER_STRIKES_SKIP):
+  BT PnL: $0.
+
+VEV_6500 — SKIPPED:
+  BT PnL: $0.
+
+========================================================================
+PART 3: CAN VEV_4000 BE IMPROVED?
+========================================================================
+
+The current strategy captures ~$2,948/day. Let's decompose this.
+
+SPREAD CAPTURE ANALYSIS:
+  With ~155 trades/day, ~77 per side (balanced), and our spread of 19:
+  Each buy at intrinsic-9.4, each sell at intrinsic+9.4.
+  If buys and sells alternate perfectly: 77 round-trips * 18.8 = $1,448/day.
+  The remaining ~$1,500/day comes from INVENTORY MTM:
+  With delta=1.0, any net long inventory gains on VFE up-days.
+  Day 2 (VFE +28): MTM on avg net position of ~50 → 50*28 = $1,400.
+  This matches the data.
+
+COULD WE WIDEN THE QUOTE?
+  Current: bb+1 / ba-1 (1 tick inside bot each side).
+  At bb / ba (same as bot): share fills pro-rata 30/(30+11) = 73%.
+    77 * 0.73 = 56 RTs. 56 * 20.8 = $1,165. WORSE (fewer fills).
+  At bb+2 / ba-2 (2 ticks inside): still all flow to us.
+    77 RTs * 16.8 = $1,294. WORSE (less capture per RT).
+
+  VERDICT: bb+1/ba-1 is already the OPTIMAL quoting strategy.
+  It maximizes the product of (fill_probability × spread_capture).
+  1 tick inside the bot gives 100% priority at 18.8 per RT.
+
+COULD WE INCREASE SIZE OR CAP?
+  Current: size=30, cap=100.
+  Taker trades 2-3 per trade. Size 30 already absorbs full trade. Size 50
+  adds nothing — all taker volume is consumed at 30.
+  Cap 100 is rarely hit (balanced flow → position oscillates around 0).
+  Increasing cap to 200 only helps if position drifts past 100, which requires
+  a sustained imbalance (~40+ ticks of one-sided flow). Rare but possible.
+
+  CHANGE: Increase cap from 100 to 150. Low risk, marginal benefit.
+  Expected: +$0-200/day on rare occasions.
+
+COULD WE HEDGE DELTA?
+  Delta=1.0, so our VEV_4000 position is equivalent to VFE position.
+  Hedging: sell VFE against long VEV_4000 position.
+  But VFE has spread ~5. Each hedge costs 2.5 ticks (half-spread).
+  With ~77 buys/day needing hedges: 77 * 2.5 = $192.5 hedging cost.
+  This REDUCES PnL. The MTM from inventory drift ($1,500/day) >> hedge cost,
+  and since flow is balanced, the unhedged PnL volatility averages out.
+
+  VERDICT: Do NOT hedge. The unhedged strategy is better.
+
+VEV_4000 BOTTOM LINE:
+  Current strategy is near-optimal. +$150-200/day from cap increase.
+  No other changes warranted. This is a solved problem.
+
+========================================================================
+PART 4: CAN VEV_4500 BE IMPROVED?
+========================================================================
+
+The fundamental problem: ZERO taker trades. In 30,000 ticks, 1 trade total.
+
+WHY does the taker bot ignore 4500 but trade 4000?
+  The taker bot appears to be programmed to trade specific strikes:
+    Active:  4000 (deep ITM), 5300-5500 (near ATM/OTM), 6000-6500 (far OTM)
+    Dead:    4500, 5000, 5100 (sparse), 5200 (sparse)
+  This is a DESIGN CHOICE by IMC, not a moneyness function.
+
+OUR ONLY FILL SOURCE: "Invisible taker" mechanism.
+  From R1 ACO analysis: ~59 fills/2k ticks from inside-spread posting on a
+  stable-FV product. Extrapolated to 10k: ~295 fills.
+  VEV_4500 has spread=16 and our code posts at bb+1/ba-1 (inside by 1 tick).
+  If the invisible taker mechanism works similarly: ~295 fills/day.
+  Each fill at bb+1 (buy side) or ba-1 (sell side), capture ~14 per RT.
+  With ~148 RTs: 148 * 14 = $2,072/day.
+
+  BUT: this is WEBSITE-ONLY. The BT has no invisible taker model.
+  AND: the R1 ACO comparison may not transfer (ACO is a fixed-FV product
+  while VEV_4500 moves with VFE).
+  AND: the R1 ACO fill rate was for a product with completely different
+  bot parameters (spread=16 for ACO, also 16 for VEV_4500 — coincidence?).
+
+WHAT CAN WE CHANGE IN THE CODE?
+  1. Increase size from 30 to 50: more aggressive inside-spread posting
+     might attract more invisible taker fills. Unknown fill rate impact.
+  2. Post at intrinsic ± 1 instead of bb+1/ba-1:
+     bid at intrinsic-1 = ~intrinsic-1 (much tighter than bb+1 = intrinsic-9.4)
+     This narrows our spread from 14 to 2, reducing capture per RT dramatically.
+     But it provides MUCH better price to the invisible taker, potentially
+     increasing fill rate. Net effect: uncertain.
+
+RECOMMENDATION:
+  Keep current code. The BT shows $0, website MIGHT show $100-500+.
+  The invisible taker fills are the only opportunity and they can't be
+  optimized via backtesting. Just ensure we're posting inside the spread.
+
+VEV_4500 BOTTOM LINE:
+  Dead market in BT. May earn $0-500/day on website from invisible takers.
+  No code changes warranted — current strategy is reasonable.
+
+========================================================================
+PART 5: CAN VEV_6000 / VEV_6500 BE EXPLOITED?
+========================================================================
+
+Current: SKIPPED entirely. PnL = $0.
+
+THE OPPORTUNITY: "FREE OPTIONS" AT PRICE ZERO
+  Book: bid=0, ask=1, mid=0.5. Constant forever.
+  Taker: sells ~320-345 contracts/day at price 0.
+  If we post a passive bid at 0, the taker hits our bid.
+  We buy at 0. Cost basis = 0. Mark-to-mid = 0.5. Unrealized PnL = +0.5/contract.
+
+HOW FILLS WORK:
+  1. Bot posts bid=0, ask=1
+  2. We post bid at 0, size S
+  3. Our bid at 0 goes passive (doesn't cross ask at 1)
+  4. Taker sells at bid=0, hitting both bot and our bid
+  5. Pro-rata fill: our_share = S / (S + bot_L1)
+     With S=30, bot_L1=22: share = 30/52 = 58%
+     With S=100, bot_L1=22: share = 100/122 = 82%
+
+EXPECTED FILLS PER DAY:
+  ~95 taker events, average 3.5 contracts each.
+  At S=30: 0.58 * 95 * 3.5 = ~193 contracts. But cap at 300.
+  At S=100: 0.82 * 95 * 3.5 = ~273 contracts. Fills most of cap.
+
+PNL CALCULATION:
+  Buy at 0, mark at 0.5. Per contract: +$0.5.
+  300 contracts * $0.5 = $150 per strike.
+  Two strikes (6000 + 6500): $300 total.
+
+  TIMING: accumulation takes ~30-50 taker events to fill 300 contracts.
+  At ~1 event per 100 ticks, full cap reached by tick ~3,000-5,000.
+  For the 1k-tick website test: fill ~100-150 contracts per strike.
+  1k-tick PnL: ~100 * 0.5 * 2 = $100.
+
+RISKS:
+  1. SETTLEMENT: If the game settles at intrinsic (=0) rather than mid (=0.5),
+     the realized PnL at settlement = 0 - 0 = $0. But the WITHIN-DAY PnL
+     at the website test endpoint (tick 1000) uses mid, not intrinsic.
+     So for the website test, this works. For the full 10k day, depends
+     on whether end-of-day evaluation uses mid or settlement.
+
+  2. BID AT ZERO: The game engine must accept Order(sym, 0, qty). Price=0
+     is a valid integer for a worthless option. If the engine rejects
+     price=0 orders, this strategy fails. NEEDS TESTING.
+
+  3. POSITION LIMIT: posting large bids (100+) at 0 means total_buy = 100.
+     Position starts at 0, so 0 + 100 = 100 <= 300. Fine. As position grows,
+     we must reduce bid size: remaining = 300 - pos. Standard headroom logic.
+
+  4. ADVERSE INTERACTION: VEV_6000/6500 are currently in VOUCHER_STRIKES_SKIP.
+     The intrinsic arb layer skips them. The call-spread arb layer skips pairs
+     involving them. No interference with other layers.
+
+IMPLEMENTATION:
+  - Remove 6000/6500 from VOUCHER_STRIKES_SKIP
+  - Add new layer: for K in [6000, 6500], post passive bid at 0, size 50,
+    cap 300. No asks (no buyer flow).
+  - OR: keep them in SKIP for all other layers, add a dedicated "free OTM"
+    layer that ONLY posts passive bids at 0.
+
+IS THIS WORTH IT?
+  $150/strike = $300 total for both. On 1k ticks: ~$100.
+  It's free money with zero risk (cost=0, can't lose more than you paid).
+  Implementation: ~10 lines of code. Trivially simple.
+
+  VERDICT: YES, implement. Small but free.
+
+========================================================================
+PART 6: CROSS-STRIKE TAKER BOT PATTERN
+========================================================================
+
+The taker bot trades a SPECIFIC subset of strikes, not a continuous function:
+
+  Strike   Trades/Day   Taker Direction     Bot Design Intent
+  ------   ----------   ---------------     -----------------
+  4000     128-172      50/50 balanced      Two-sided market taker (delta=1)
+  4500     0-1          N/A                 IGNORED by taker bot
+  5000     0-1          N/A                 IGNORED
+  5100     0-3          N/A                 Effectively ignored
+  5200     3-8          N/A                 Sparse, unreliable
+  5300     37-45        100% SELL           One-sided OTM seller
+  5400     64-81        100% SELL           One-sided OTM seller
+  5500     81-94        100% SELL           One-sided OTM seller (most active)
+  6000     91-98        100% SELL at 0      Deterministic OTM dumper
+  6500     91-98        100% SELL at 0      Same bot as 6000, simultaneous
+
+Pattern: The taker is BIMODAL.
+  - Deep ITM (4000): balanced two-sided trading
+  - Near/slightly OTM (5300-5500): one-sided selling, increasing with OTM-ness
+  - Far OTM (6000-6500): deterministic selling at 0
+
+The "dead zone" is 4500-5200: no taker interest. These strikes only earn
+from MM spread capture against invisible takers (website-only).
+
+IMPLICATION: Optimizing for BT PnL should focus on:
+  1. VEV_4000: already optimized ($2,948/day)
+  2. VEV_5300-5500: improved in r3_voucher_v22_improvement.py (+$615)
+  3. VEV_6000/6500: implement "free options" ($300/day, trivial)
+  4. VEV_4500/5000/5100/5200: website-only invisible taker fills, can't optimize
+
+========================================================================
+PART 7: NO THETA DECAY IN THIS GAME
+========================================================================
+
+Critical finding: time value is CONSTANT within each day.
+
+  VEV_4000/4500 time value: 0.01 mean, 0.82 std, NO quintile trend.
+  VEV_6000/6500 time value: 0.50 constant, ZERO variance.
+
+The options do NOT decay like real options. The bot maintains constant spreads
+and quote levels regardless of TTE. The only price movement comes from VFE
+spot movement (delta exposure), not from theta decay.
+
+This has two implications:
+  1. "Theta carry" as a strategy name is misleading — there IS no theta.
+     The VEV_4000 MM strategy profits from SPREAD CAPTURE, not theta.
+  2. Buying OTM options doesn't have a theta drag within the trading day.
+     The 1k-tick website test (~100 seconds) sees zero theta erosion.
+     Buy-and-hold OTM options is less costly than it would be in real markets.
+
+BETWEEN days, TTE decreases by 1 day (5→4→3). The cross-day effect on
+pricing is embedded in the bot's quote levels, which appear stable. We
+don't observe cross-day data within a single submission, so this is moot.
+
+========================================================================
+PART 8: SUMMARY OF ACTIONABLE CHANGES
+========================================================================
+
+  Strike   Current       Proposed            Expected Impact
+  ------   -------       --------            ---------------
+  VEV_4000 MM at bb+1    Increase cap 100→150  +$0-200/day (rare)
+           ba-1, cap 100 (everything else is already optimal)
+
+  VEV_4500 MM at bb+1    No change             $0 (dead market)
+           ba-1, cap 100 (only website invisible taker fills)
+
+  VEV_6000 SKIPPED       Passive bid at 0      +$150/day (free money)
+                          size 50, cap 300
+
+  VEV_6500 SKIPPED       Passive bid at 0      +$150/day (free money)
+                          size 50, cap 300
+
+  Total expected improvement: +$300-500/day over v22 baseline.
+
+  Priority ranking vs other improvements:
+    1. HP improvements (r3_hp_v22_improved.py)     +$14k/day (3-day)
+    2. OTM voucher improvements (5300-5500)        +$200/day
+    3. VEV_5000 dedicated MM (website-only)         +$0 BT / +$2k website?
+    4. VEV_6000/6500 free options                   +$300/day ← THIS
+    5. VEV_4000 cap increase                        +$100/day
+    6. VEV_4500 (nothing to do)                     $0
+
+========================================================================
+PART 9: RISK ASSESSMENT — WHY VEV_4000 MIGHT LOSE MONEY
+========================================================================
+
+VEV_4000 earns $2,437-3,367/day, but this INCLUDES inventory MTM.
+
+  Day 0 (VFE -6):   $3,039 — despite VFE drop, spread capture dominates
+  Day 1 (VFE +20):  $3,367 — spread capture + long MTM
+  Day 2 (VFE +28):  $2,437 — paradoxically LESS than day 0
+
+Why day 2 is lower despite VFE going up more:
+  Fewer trades on day 2 (128 vs 172 on day 0). Less spread capture.
+  The MTM from delta exposure is a BONUS, not the core edge.
+  Core edge = bb+1/ba-1 spread capture of ~18.8 per round-trip.
+
+STRESS SCENARIO: VFE drops 50 points in a day (never seen in data but possible).
+  Net long inventory of ~50 → MTM loss = 50 * 50 = -$2,500.
+  Spread capture of ~$1,400 partially offsets.
+  Net: -$1,100 on a bad day. SURVIVABLE.
+
+This is why increasing the cap BEYOND 150 is risky — larger inventory
+amplifies the MTM swing. 150 is a reasonable balance.
+
+========================================================================
+PART 10: BOTTOM LINE
+========================================================================
+
+VEV_4000: SOLVED. Near-optimal strategy. $2,948/day average. Don't touch it
+beyond a minor cap increase to 150.
+
+VEV_4500: DEAD MARKET. Accept $0 in BT. May earn $100-500 on website from
+invisible takers. No code changes needed.
+
+VEV_6000/VEV_6500: FREE MONEY. $300/day from buying at 0 and marking at 0.5.
+Zero risk (cost=0). Implement: ~10 lines. Only caveat: test that the engine
+accepts price=0 orders.
+
+Combined impact of all 4 strikes: +$300-500/day over current.
+This is TINY compared to HP improvements (+$14k/day) or even OTM voucher
+improvements (+$200-600/day). These are rounding errors in the full strategy.
+
+The real alpha on this game is in HP (S17 cycle + directional layers) and
+VFE (Wall-Mid MM). Vouchers are a supporting cast.

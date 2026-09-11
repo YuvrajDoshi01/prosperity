@@ -1,0 +1,172 @@
+==============================================================================================================
+R4 MANUAL — HIDDEN ALPHA HUNT v2 — 59 combos
+==============================================================================================================
+S0=50.0, sigma=2.51, T_3w=0.05952, T_2w=0.03968
+
+Label                                                        CashFlow    FairMTM    EV@Fair     Min(T)     Max(T)     LB_PnL     UB_PnL   Arb?
+--------------------------------------------------------------------------------------------------------------------------------------------
+Conversion K=50 3w                                           -50.0750   +50.0000    -0.0750     +50.00     +50.00    -0.0750    -0.0750     no
+Reversal K=50 3w                                             +49.9250   -50.0000    -0.0750     -50.00     -50.00    -0.0750    -0.0750     no
+Conversion K=50 2w                                           -50.0750   +50.0000    -0.0750     -49.00    +149.00   -99.0750   +98.9250     no
+Reversal K=50 2w                                             +49.9250   -50.0000    -0.0750    -149.00     +49.00   -99.0750   +98.9250     no
+Synth_long_3w_50 + sell_spot                                 +49.9250   -50.0000    -0.0750     -50.00     -50.00    -0.0750    -0.0750     no
+Synth_short_3w_50 + buy_spot                                 -50.0750   +50.0000    -0.0750     +50.00     +50.00    -0.0750    -0.0750     no
+Synth_long_2w_50 + sell_spot                                 +49.9250   -50.0000    -0.0750    -149.00     +49.00   -99.0750   +98.9250     no
+Synth_short_2w_50 + buy_spot                                 -50.0750   +50.0000    -0.0750     -49.00    +149.00   -99.0750   +98.9250     no
+Long_3w_synth + Short_2w_synth (calendar synth)               -0.1000    +0.0000    -0.1000     -99.00     +99.00   -99.1000   +98.9000     no
+Short_3w_synth + Long_2w_synth                                -0.1000    +0.0000    -0.1000     -99.00     +99.00   -99.1000   +98.9000     no
+Calendar_long_3w_short_2w_C50                                 -2.3500    +2.1562    -0.1938     -50.00     +50.00   -52.3500   +47.6500     no
+Calendar_short_3w_long_2w_C50                                 +2.2500    -2.1562    +0.0938     -50.00     +50.00   -47.7500   +52.2500     no
+Calendar_long_3w_short_2w_P50                                 -2.3500    +2.1562    -0.1938     -49.00     +49.00   -51.3500   +46.6500     no
+Calendar_short_3w_long_2w_P50                                 +2.2500    -2.1562    +0.0938     -49.00     +49.00   -46.7500   +51.2500     no
+Put_1x2_BUY_35_SELL_2x40                                      +8.6500    -8.6829    -0.0329     -44.00      +0.00   -35.3500    +8.6500     no
+Put_1x2_SELL_35_BUY_2x40                                      -8.7700    +8.6829    -0.0871      +0.00     +44.00    -8.7700   +35.2300     no
+Put_2x1_BUY_2x35_SELL_40                                      -2.2000    +2.1628    -0.0372      -5.00     +29.00    -7.2000   +26.8000     no
+Put_2x1_SELL_2x35_BUY_40                                      +2.1100    -2.1628    -0.0528     -29.00      +5.00   -26.8900    +7.1100     no
+Put_1x2_BUY_40_SELL_2x45                                     +11.5500   -11.6683    -0.1183     -49.00      +0.00   -37.4500   +11.5500     no
+Put_1x2_SELL_40_BUY_2x45                                     -11.7000   +11.6683    -0.0317      +0.00     +49.00   -11.7000   +37.3000     no
+Put_2x1_BUY_2x40_SELL_45                                      -4.0500    +3.9302    -0.1198      -5.00     +34.00    -9.0500   +29.9500     no
+Put_2x1_SELL_2x40_BUY_45                                      +3.9000    -3.9302    -0.0302     -34.00      +5.00   -30.1000    +8.9000     no
+Put_1x2_BUY_45_SELL_2x50                                     +14.9000   -14.9650    -0.0650     -54.00      +0.00   -39.1000   +14.9000     no
+Put_1x2_SELL_45_BUY_2x50                                     -15.0500   +14.9650    -0.0850      +0.00     +54.00   -15.0500   +38.9500     no
+Put_2x1_BUY_2x45_SELL_50                                      -6.2000    +6.1509    -0.0491      -5.00     +39.00   -11.2000   +32.8000     no
+Put_2x1_SELL_2x45_BUY_50                                      +6.0500    -6.1509    -0.1009     -39.00      +5.00   -32.9500   +11.0500     no
+Call_1x2_BUY_50_SELL_2x60                                     +5.5500    -5.5566    -0.0066     -30.00     +10.00   -24.4500   +15.5500     no
+Call_1x2_SELL_50_BUY_2x60                                     -5.7000    +5.5566    -0.1434     -10.00     +30.00   -15.7000   +24.3000     no
+Call_2x1_BUY_2x50_SELL_60                                    -15.3000   +15.2621    -0.0379      +0.00     +60.00   -15.3000   +44.7000     no
+Call_2x1_SELL_2x50_BUY_60                                    +15.1500   -15.2621    -0.1121     -60.00      +0.00   -44.8500   +15.1500     no
+SELL_chooser_BUY_C3w50_BUY_P2w50                              +0.4000    +0.0000    +0.4000     -50.23     +50.00   -49.8330   +50.4000     no
+BUY_chooser_SELL_C3w50_SELL_P2w50                             -0.6000    +0.0000    -0.6000     -50.00     +50.23   -50.6000   +49.6330     no
+BUY_chooser_SELL_2w_straddle (lower bound check)              -2.9000    +2.1562    -0.7438      +0.00      +7.02    -2.9000    +4.1159     no
+SELL_chooser_BUY_2w_straddle                                  +2.7000    -2.1562    +0.5438      -7.02      +0.00    -4.3159    +2.7000     no
+BUY_chooser_SELL_3w_straddle                                  +1.7000    -2.1562    -0.4562     -42.98     +50.23   -41.2841   +51.9330     no
+SELL_chooser_BUY_3w_straddle (upper bound check)              -1.9000    +2.1562    +0.2562     -50.23     +42.98   -52.1330   +41.0841     no
+PutBfly_BUY_35_SELL_40_BUY_45                                 -0.4500    +0.4060    -0.0440      +0.00      +5.00    -0.4500    +4.5500     no
+PutBfly_SELL_35_BUY_40_SELL_45                                +0.2800    -0.4060    -0.1260      -5.00      +0.00    -4.7200    +0.2800     no
+PutBfly_BUY_40_SELL_45_BUY_50                                 -0.5000    +0.3587    -0.1413      +0.00      +5.00    -0.5000    +4.5000     no
+PutBfly_SELL_40_BUY_45_SELL_50                                +0.3000    -0.3587    -0.0587      -5.00      +0.00    -4.7000    +0.3000     no
+PutBfly_BUY_35_SELL_40_BUY_50                                 -3.4000    +3.3440    -0.0560      +0.00     +10.00    -3.4000    +6.6000     no
+PutBfly_SELL_35_BUY_40_SELL_50                                +3.2300    -3.3440    -0.1140     -10.00      +0.00    -6.7700    +3.2300     no
+PutBfly_BUY_35_SELL_45_BUY_50                                 +1.7000    -1.8147    -0.1147      -5.00      +5.00    -3.3000    +6.7000     no
+PutBfly_SELL_35_BUY_45_SELL_50                                -1.8700    +1.8147    -0.0553      -5.00      +5.00    -6.8700    +3.1300     no
+CallSpread_BUY_50C_SELL_60C                                   -3.2500    +3.2352    -0.0148      +0.00     +10.00    -3.2500    +6.7500     no
+CallSpread_SELL_50C_BUY_60C                                   +3.1500    -3.2352    -0.0852     -10.00      +0.00    -6.8500    +3.1500     no
+Strangle_3w_BUY_45P_60C                                      -17.9500   +17.8807    -0.0693      +0.00     +44.00   -17.9500   +26.0500     no
+Strangle_3w_SELL_45P_60C                                     +17.8500   -17.8807    -0.0307     -44.00      +0.00   -26.1500   +17.8500     no
+Strangle_3w_BUY_40P_60C                                      -15.4000   +15.3013    -0.0987      +0.00     +40.00   -15.4000   +24.6000     no
+Strangle_3w_SELL_40P_60C                                     +15.3000   -15.3013    -0.0013     -40.00      +0.00   -24.7000   +15.3000     no
+IronCondor_SELL45P_BUY40P_SELL60C (no upper wing)            +11.3000   -11.3712    -0.0712     -40.00      +0.00   -28.7000   +11.3000     no
+IronFly_SELL50P_SELL50C_BUY45P_BUY60C                         +6.0500    -6.1732    -0.1232     -10.00      +0.00    -3.9500    +6.0500     no
+ReverseIronFly_BUY50P_BUY50C_SELL45P_SELL60C                  -6.2500    +6.1732    -0.0768      +0.00     +10.00    -6.2500    +3.7500     no
+SELL_5BP40_BUY_P45_SELL_P35 (digital_via_put_spread)         +20.2300   -19.0870    +1.1430     -45.00      +4.50   -24.7700   +24.7300     no
+BUY_5BP40_SELL_P45_BUY_P35                                   -20.8000   +19.0870    -1.7130      -4.50     +45.00   -25.3000   +24.2000     no
+SELL_BP40_BUY_centered_call-put-spread (single)               +0.2300    -0.0152    +0.2148      -5.00      +4.50    -4.7700    +4.7300     no
+BUY_KO_SELL_P45 (KO<=P bound check)                           +8.8750    -8.8717    +0.0033     -44.00      +0.00   -35.1250    +8.8750     no
+SELL_KO_BUY_P45 (synth KI long)                               -8.9500    +8.8717    -0.0783      +0.00     +44.00    -8.9500   +35.0500     no
+SELL_chooser_SELL_BP_BUY_C3w_BUY_P2w (capture both edges)     +5.4000    -4.7679    +0.6321     -60.23     +50.00   -54.8330   +55.4000     no
+
+==============================================================================================================
+RISK-FREE ARBS FOUND: 0
+==============================================================================================================
+  None. Market is static-arb-free.
+
+==============================================================================================================
+TOP +EV COMBOS (ranked by EV at BS fair, ignoring risk)
+==============================================================================================================
+Rank Label                                                        EV@Fair  CashFlow    LB_PnL    UB_PnL
+1    SELL_5BP40_BUY_P45_SELL_P35 (digital_via_put_spread)         +1.1430  +20.2300  -24.7700  +24.7300
+2    SELL_chooser_SELL_BP_BUY_C3w_BUY_P2w (capture both edges)    +0.6321   +5.4000  -54.8330  +55.4000
+3    SELL_chooser_BUY_2w_straddle                                 +0.5438   +2.7000   -4.3159   +2.7000
+4    SELL_chooser_BUY_C3w50_BUY_P2w50                             +0.4000   +0.4000  -49.8330  +50.4000
+5    SELL_chooser_BUY_3w_straddle (upper bound check)             +0.2562   -1.9000  -52.1330  +41.0841
+6    SELL_BP40_BUY_centered_call-put-spread (single)              +0.2148   +0.2300   -4.7700   +4.7300
+7    Calendar_short_3w_long_2w_C50                                +0.0938   +2.2500  -47.7500  +52.2500
+8    Calendar_short_3w_long_2w_P50                                +0.0938   +2.2500  -46.7500  +51.2500
+9    BUY_KO_SELL_P45 (KO<=P bound check)                          +0.0033   +8.8750  -35.1250   +8.8750
+10   Strangle_3w_SELL_40P_60C                                     -0.0013  +15.3000  -24.7000  +15.3000
+11   Call_1x2_BUY_50_SELL_2x60                                    -0.0066   +5.5500  -24.4500  +15.5500
+12   CallSpread_BUY_50C_SELL_60C                                  -0.0148   -3.2500   -3.2500   +6.7500
+13   Put_2x1_SELL_2x40_BUY_45                                     -0.0302   +3.9000  -30.1000   +8.9000
+14   Strangle_3w_SELL_45P_60C                                     -0.0307  +17.8500  -26.1500  +17.8500
+15   Put_1x2_SELL_40_BUY_2x45                                     -0.0317  -11.7000  -11.7000  +37.3000
+16   Put_1x2_BUY_35_SELL_2x40                                     -0.0329   +8.6500  -35.3500   +8.6500
+17   Put_2x1_BUY_2x35_SELL_40                                     -0.0372   -2.2000   -7.2000  +26.8000
+18   Call_2x1_BUY_2x50_SELL_60                                    -0.0379  -15.3000  -15.3000  +44.7000
+19   PutBfly_BUY_35_SELL_40_BUY_45                                -0.0440   -0.4500   -0.4500   +4.5500
+20   Put_2x1_BUY_2x45_SELL_50                                     -0.0491   -6.2000  -11.2000  +32.8000
+21   Put_2x1_SELL_2x35_BUY_40                                     -0.0528   +2.1100  -26.8900   +7.1100
+22   PutBfly_SELL_35_BUY_45_SELL_50                               -0.0553   -1.8700   -6.8700   +3.1300
+23   PutBfly_BUY_35_SELL_40_BUY_50                                -0.0560   -3.4000   -3.4000   +6.6000
+24   PutBfly_SELL_40_BUY_45_SELL_50                               -0.0587   +0.3000   -4.7000   +0.3000
+25   Put_1x2_BUY_45_SELL_2x50                                     -0.0650  +14.9000  -39.1000  +14.9000
+
+==============================================================================================================
+PROMISING COMBO DETAILS (top-5 +EV with non-symmetric risk graph)
+==============================================================================================================
+
+>>> SELL_5BP40_BUY_P45_SELL_P35 (digital_via_put_spread)
+    legs:           [('AC_40_BP', -5), ('AC_45_P', 1), ('AC_35_P', -1)]
+    cash today:     +20.2300
+    BS fair MTM:    -19.0870
+    EV at fair:     +1.1430
+    terminal range: [-45.00, +4.50]
+    PnL bounds:     [-24.77, +24.73]
+
+>>> SELL_chooser_SELL_BP_BUY_C3w_BUY_P2w (capture both edges)
+    legs:           [('AC_50_CO', -1), ('AC_40_BP', -1), ('AC_50_C', 1), ('AC_50_P_2', 1)]
+    cash today:     +5.4000
+    BS fair MTM:    -4.7679
+    EV at fair:     +0.6321
+    terminal range: [-60.23, +50.00]
+    PnL bounds:     [-54.83, +55.40]
+
+>>> SELL_chooser_BUY_2w_straddle
+    legs:           [('AC_50_CO', -1), ('AC_50_C_2', 1), ('AC_50_P_2', 1)]
+    cash today:     +2.7000
+    BS fair MTM:    -2.1562
+    EV at fair:     +0.5438
+    terminal range: [-7.02, +0.00]
+    PnL bounds:     [-4.32, +2.70]
+
+>>> SELL_chooser_BUY_C3w50_BUY_P2w50
+    legs:           [('AC_50_CO', -1), ('AC_50_C', 1), ('AC_50_P_2', 1)]
+    cash today:     +0.4000
+    BS fair MTM:    +0.0000
+    EV at fair:     +0.4000
+    terminal range: [-50.23, +50.00]
+    PnL bounds:     [-49.83, +50.40]
+
+>>> SELL_chooser_BUY_3w_straddle (upper bound check)
+    legs:           [('AC_50_CO', -1), ('AC_50_C', 1), ('AC_50_P', 1)]
+    cash today:     -1.9000
+    BS fair MTM:    +2.1562
+    EV at fair:     +0.2562
+    terminal range: [-50.23, +42.98]
+    PnL bounds:     [-52.13, +41.08]
+
+==============================================================================================================
+CONVEX-BOUND SANITY (using bid for sells, ask for buys at the WORST)
+==============================================================================================================
+Bid-side (sells must be monotone): tighter check.
+
+Put prices (3w) at QUOTES — bids and asks:
+  K= 35  bid= 4.330  ask= 4.350  fair= 4.336
+  K= 40  bid= 6.500  ask= 6.550  fair= 6.510
+  K= 45  bid= 9.050  ask= 9.100  fair= 9.089
+  K= 50  bid=12.000  ask=12.050  fair=12.027
+
+Call prices (3w):
+  K= 50  bid=12.000  ask=12.050  fair=12.027
+  K= 60  bid= 8.800  ask= 8.850  fair= 8.792
+
+Put-slope check: 0 <= P(K2_bid) - P(K1_ask) <= K2-K1 (slope between 0 and 1)
+Traceback (most recent call last):
+  File "C:\Users\gurms\PycharmProjects\imc-prosperity-4-backtester\trader-logic\round-4\manual\hidden_alpha_v2.py", line 625, in <module>
+    main()
+  File "C:\Users\gurms\PycharmProjects\imc-prosperity-4-backtester\trader-logic\round-4\manual\hidden_alpha_v2.py", line 606, in main
+    print(f"  K={K1}->K={K2} (\u0394={K2-K1}): bid-ask spread of slope = [{slope_lo:+.3f}, {slope_hi:+.3f}], "
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gurms\AppData\Local\Programs\Python\Python311\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u0394' in position 14: character maps to <undefined>

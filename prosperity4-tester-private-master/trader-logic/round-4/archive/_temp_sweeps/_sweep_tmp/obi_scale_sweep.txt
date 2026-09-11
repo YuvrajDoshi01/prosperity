@@ -1,0 +1,11 @@
+v5_obiscale1_cap100 | 1k=Total profit: 5,246 | def=Total profit: 134,200 | imc=Total profit: 125,763
+v5_obiscale1_cap150 | 1k=Total profit: 5,270 | def=Total profit: 134,086 | imc=Total profit: 124,680
+v5_obiscale1_cap200 | 1k=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_obiscale1_cap300 | 1k=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_obiscale2_cap100 | 1k=Total profit: 5,246 | def=Total profit: 134,200 | imc=Total profit: 125,763
+v5_obiscale2_cap150 | 1k=Total profit: 5,270 | def=Total profit: 134,086 | imc=Total profit: 124,680
+v5_obiscale2_cap200 | 1k=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_obiscale2_cap300 | 1k=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_obiscale3_cap100 | 1k=Total profit: 5,246 | def=Total profit: 134,200 | imc=Total profit: 125,763
+v5_obiscale3_cap150 | 1k=Total profit: 5,270 | def=Total profit: 134,086 | imc=Total profit: 124,680
+v5_obiscale3_cap200 | 1k=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284

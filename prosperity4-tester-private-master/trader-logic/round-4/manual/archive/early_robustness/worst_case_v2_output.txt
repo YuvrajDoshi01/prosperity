@@ -1,0 +1,22 @@
+WORST-CASE PATH ANALYSIS -- OPTIMAL_7POS
+================================================================================
+  Total paths: 100,000,000
+  Trials:      1,000,000 of 100 paths each
+  Worst 5%:    50,000 trials
+
+Pass 1: Generate paths, compute total PnL + cache features
+  Chunk 1/20: 5.3s (total 5.3s, ETA 100s)
+  Chunk 2/20: 5.5s (total 10.7s, ETA 98s)
+  Chunk 3/20: 7.0s (total 17.7s, ETA 119s)
+  Chunk 4/20: 9.7s (total 27.4s, ETA 155s)
+  Chunk 5/20: 10.1s (total 37.4s, ETA 151s)
+  Chunk 6/20: 10.0s (total 47.4s, ETA 140s)
+  Chunk 7/20: 10.1s (total 57.5s, ETA 131s)
+  Chunk 8/20: 10.7s (total 68.2s, ETA 128s)
+  Chunk 9/20: 11.3s (total 79.6s, ETA 125s)
+  Chunk 10/20: 14.5s (total 94.0s, ETA 145s)
+  Chunk 11/20: 16.3s (total 110.4s, ETA 147s)
+  Chunk 12/20: 18.2s (total 128.6s, ETA 146s)
+  Chunk 13/20: 14.9s (total 143.5s, ETA 104s)
+  Chunk 14/20: 13.6s (total 157.1s, ETA 82s)
+  Chunk 15/20: 15.1s (total 172.2s, ETA 75s)

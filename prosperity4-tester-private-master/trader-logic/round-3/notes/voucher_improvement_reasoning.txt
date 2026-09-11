@@ -1,0 +1,302 @@
+VOUCHER IMPROVEMENT REASONING — OTM Strikes (5000, 5300, 5400, 5500)
+=====================================================================
+Date: 2026-04-26
+Status: Analysis only, no code changes
+
+========================================================================
+PART 1: THE DATA — WHAT EACH STRIKE ACTUALLY IS
+========================================================================
+
+Strike   Mean Price  Spread(mode)  Spread>=2  Delta  Taker Flow    Trades/Day
+------   ----------  ------------  ---------  -----  ----------    ----------
+VEV_5000   253-259     6 (99%)      100%      0.69   ZERO          0-1
+VEV_5300    44-49      2 (85-95%)   94-99%    0.29   100% SELLERS  37-45
+VEV_5400    14-19      1 (57-67%)   33-43%    0.14   100% SELLERS  64-81
+VEV_5500     5-8       1 (82-88%)   12-18%    0.06   100% SELLERS  81-94
+
+The phase transition at spread=1 is the critical finding. VEV_5400 and VEV_5500
+have spread=1 MOST of the time — you CANNOT post inside the spread. VEV_5000
+has spread=6 always — pure MM paradise. VEV_5300 is the marginal case.
+
+Every single taker trade on 5300/5400/5500 is a SELL (at bid). Zero buyer flow
+across 500+ trades over 3 days. This is structural, not noise.
+
+========================================================================
+PART 2: BUY-AND-HOLD VS MARKET MAKING — THE HONEST ANSWER
+========================================================================
+
+BUY-AND-HOLD (300 contracts at ask, value at bid at end):
+
+  Strike    Day 0      Day 1      Day 2      Consistent?
+  ------    -----      -----      -----      -----------
+  5000      negative   positive   positive   NO (2/3 up)
+  5300      negative   positive   positive   NO (2/3 up)
+  5400      negative   positive   positive   NO (2/3 up)
+  5500      negative   negative   flat       NO (all neg)
+
+B&H is pure delta exposure. It wins on VFE up-days (day 1: +20, day 2: +28)
+and loses on VFE down-days (day 0: -6). There is no structural edge — you are
+just betting on VFE direction. Theta works against you (~2.3/day on 5400).
+
+FIRST-1K-TICK B&H: Negative on ALL strikes, ALL days. The spread cost +
+theta cost dominates any delta gain in 100 seconds. Never buy-and-hold for
+the website test window.
+
+MARKET MAKING (symmetric bid/ask posting):
+
+  Strike    Feasible?    Why
+  ------    ---------    ---
+  VEV_5000  YES (best)   Spread=6, capture ~4 ticks/round-trip
+  VEV_5300  MARGINAL     Spread=2, capture 0 ticks (post at mid)
+  VEV_5400  NO           Spread=1 majority — no room
+  VEV_5500  NO           Spread=1 majority — no room
+
+Traditional MM (symmetric quoting) only works on VEV_5000. For 5400/5500,
+the ONLY way to participate is passive one-sided bidding (absorb seller flow).
+
+========================================================================
+PART 3: WHERE THE CURRENT STRATEGY LOSES EDGE
+========================================================================
+
+Current v22 voucher layers and their problems:
+
+LAYER: Intrinsic arb (buy below intrinsic - 2)
+  Status: Fine but rarely fires. VEV_5000 intrinsic ~253, market mid ~256.
+  Only triggers on extreme dislocations. Adds ~$0-286/day.
+
+LAYER: BS taking (buy if ask < BS_fair - 10, sell if bid > BS_fair + 10)
+  Problem: BS_EDGE=10 is EXTREMELY wide. VEV_5300 mid=47, so fair-10=37 —
+  this only fires if the ask drops to 37, which basically never happens for
+  OTM strikes. On day 2 1k-tick, BS taking earns $0 on 5300/5400/5500.
+  On 10k day 2, it earns $762 on 5300, $546 on 5400 — tiny.
+  The BS_EDGE was calibrated for safety but it's TOO safe for OTM.
+
+LAYER: Passive MM on tradeable strikes (bid at bb+1, ask at ba-1, size 20)
+  Problem: On 5400/5500 where spread=1, bb+1 = ba = ask. So our "bid" is
+  at the ask, which immediately crosses and we buy at the ask. Not passive
+  at all — we're aggressive-taking at the ask, which is the WRONG direction
+  for OTM calls with 100% seller flow.
+  On 5000 (spread=6), this works well. On 5300 (spread=2), marginal.
+
+LAYER: OTM passive bids (5300/5400/5500, size 5, cap 50, edge 2 below BS)
+  Problem: SIZE=5 and CAP=50 are far too conservative. The taker sells
+  64-81 contracts/day on 5400. At size 5, cap 50, we capture at most 50
+  contracts. The taker is willing to sell 250+. We're leaving 200 contracts
+  of cheap accumulation on the table.
+
+LAYER: Deep ITM MM (4000/4500, intrinsic±1, size 30, cap 100)
+  Status: Works as designed. $2,437 on 4000 day-2 10k. No change needed.
+
+LAYER: Call-spread arb
+  Status: Rarely fires (no-arb violations are rare in mids). Adds ~$0.
+
+SUMMARY OF EDGE LEAKAGE:
+  1. OTM passive bids too small (5 units, cap 50) — should be 20-30, cap 200+
+  2. VEV_5000 underexploited — spread=6, zero taker flow, perfect for wide MM
+  3. Passive MM on 5400/5500 at spread=1 is accidental aggressive buying
+  4. BS taking edge=10 too wide for OTM — catches nothing
+
+========================================================================
+PART 4: WHAT SHOULD THE OPTIMAL STRATEGY BE?
+========================================================================
+
+STRIKE-SPECIFIC OPTIMAL STRATEGIES:
+
+── VEV_5000 (spread=6, delta=0.69, zero takers) ──────────────────────
+
+STRATEGY: Aggressive inside-spread MM.
+  - Bid at best_bid+1, ask at best_ask-1 (capture ~4 ticks/round-trip)
+  - Size: 30 per side
+  - Position cap: ±150 (reserve for arb layers)
+  - Inventory skew: when pos > 80, widen bid by 1; when pos < -80, widen ask
+
+RISK: Delta=0.69 means ±150 position has ±103 delta. A 30-point VFE move
+(typical daily range) swings PnL by ±$3,090. Must accept this inventory risk
+or hedge partially via VFE position.
+
+EXPECTED: The "invisible taker" mechanism (same as R1 ACO) should generate
+fills even with zero visible taker trades. On R1, ACO had ~59 fills/2k ticks
+from this mechanism. VEV_5000 should see similar. At 4 ticks/round-trip with
+~30 round-trips/day, that's ~$3,600/day.
+
+── VEV_5300 (spread=2, delta=0.29, 37-45 sells/day) ──────────────────
+
+STRATEGY: One-sided passive accumulation + position-aware exit.
+  - Post bid at best_bid+1, size 20, cap +200
+  - NO ask posting (no buyer flow exists)
+  - When position > 150 AND VFE is rising (VFE mid > VFE ma50), hold
+  - When position > 150 AND VFE is flat/falling, post ask to shed
+  - Terminal unwind: sell remaining position via ask at best_ask-1
+
+RISK: Pure long delta (0.29 * 200 = 58 delta equivalent). On VFE down-days
+this hurts. Day 0: -14 PnL. Days 1/2: +2,232 and +1,100.
+
+EXPECTED: 37-45 fills/day at ~3.5 contracts = 130-160 accumulated. At average
+cost below mid by ~0.5 ticks, plus terminal delta appreciation on up-days:
+$500-2,000/day on up-days, -$500 on down-days.
+
+── VEV_5400 (spread=1, delta=0.14, 64-81 sells/day) ──────────────────
+
+STRATEGY: Passive bid accumulation at best_bid (NOT best_bid+1).
+  - At spread=1, best_bid+1 = best_ask. Posting there = aggressive buy.
+  - Instead: post bid at best_bid, size 20, cap +250
+  - The taker sells AT the bid, so we get filled at our price.
+  - When spread >= 2 (33-43% of ticks), post at best_bid+1 for priority.
+
+RISK: Delta=0.14 * 250 = 35 delta. Manageable. Theta = 2.37/day on price
+~15 = 16% daily decay. BUT we're buying BELOW mid, so we have a cost basis
+advantage of ~0.5-1 tick vs fair value.
+
+EXPECTED: 64-81 fills/day at ~3.5 = 224-284 contracts. Near full cap.
+PnL = (terminal_mid - avg_cost) * qty. On day 2: ~+$1,737. Day 0: ~-$321.
+Average across 3 days: ~$700-800/day.
+
+── VEV_5500 (spread=1, delta=0.06, 81-94 sells/day) ──────────────────
+
+STRATEGY: Passive bid accumulation at best_bid, size 20, cap +300.
+  - Same logic as 5400 but even more one-sided.
+  - Price is 5-8, theta is 1.38/day (26% daily). This is a lottery ticket.
+  - Accumulate cheap, hope for VFE spike.
+
+RISK: Delta=0.06 * 300 = 18 delta. Negligible. Max loss = 300 * 7 = $2,100
+if expires worthless. But we're buying below mid, so actual max loss is lower.
+
+EXPECTED: Fill near-full 300 contracts. PnL = small positive on up-days
+(+$365 day 2), small negative on down-days (-$75 day 0). Expected ~$100/day.
+Not worth optimizing heavily — the edge is tiny.
+
+========================================================================
+PART 5: CONCRETE CHANGES TO CURRENT CODE
+========================================================================
+
+Change 1: VEV_5000 — Add dedicated wide-spread MM layer
+  Currently: only traded via intrinsic arb + BS taking + generic MM.
+  The generic MM posts at bb+1/ba-1 with size 20 — fine, but size=20 is
+  conservative for spread=6. Increase to 30, and add position cap ±150.
+  Also: the intrinsic arb sells if price > spot + 2, which for deep ITM
+  means selling at 253+2=255 when the ask is 259. This is too aggressive
+  — we're hitting bids we shouldn't. For 5000, the intrinsic arb should
+  use a wider sell threshold since the time value (3-7) is real edge.
+
+Change 2: VEV_5300/5400/5500 — Scale up OTM passive bids
+  Currently: SIZE=5, CAP=50, EDGE=2 below BS fair.
+  Proposed: SIZE=20, CAP=200 for 5300; SIZE=20, CAP=250 for 5400;
+            SIZE=20, CAP=300 for 5500. EDGE=1 (tighter).
+  This captures 4x more of the sell flow that currently goes unfilled.
+
+Change 3: VEV_5400/5500 — Fix spread=1 passive MM bug
+  Currently: posts bid at bb+1 which equals the ask at spread=1. This is
+  an aggressive buy, not a passive quote. Either:
+  (a) Skip generic passive MM for these strikes (let OTM bid layer handle)
+  (b) Only post when spread >= 2
+  The current code has V_VOUCHER_MIN_SPREAD=2, which SHOULD prevent
+  posting at spread=1. But checking the code: it posts at bb+1 which at
+  spread=1 means posting at ba, which is allowed because bb+1 < ba is
+  FALSE when spread=1 (bb+1 == ba), so the order IS placed but at the ask
+  price. Need to verify this is filtered correctly.
+
+  Actually reading the code more carefully:
+    vba - vbb < V_VOUCHER_MIN_SPREAD: continue
+  So spread < 2 → skip. At spread=1: 1 < 2 → skip. This IS filtered.
+  The bug is in the OTM bid layer: it posts at min(bb+1, bs_cap). At
+  spread=1, bb+1 = ba, then the filter "bid_px >= ba: continue" catches
+  it. So the OTM bid layer also correctly skips spread=1 ticks.
+
+  This means on 57-67% of ticks (spread=1), we post NOTHING on 5400.
+  We only accumulate on the 33-43% of ticks where spread >= 2. This
+  explains why the OTM layer captures so little. The fix: post at
+  best_bid (not best_bid+1) when spread=1. This puts us AT the bid,
+  competing with the MM bot, but the taker hits ALL bids by price
+  priority per the engine rules. So posting at best_bid still gets fills.
+
+Change 4: BS taking — Reduce edge for OTM strikes
+  Currently: V_BS_EDGE=10 for all strikes.
+  For 5300 (mid=47): fair-10=37 → never fires.
+  Proposed: per-strike edges. For 5300: edge=4. For 5400: edge=3.
+  For 5500: edge=2. These are still safe but will actually trigger.
+
+========================================================================
+PART 6: EXPECTED IMPACT
+========================================================================
+
+                          Current v22     Proposed        Delta
+                          (10k day-2)     (est.)
+  VEV_5000                   $0          $2,000-3,600    +$2-3.6k
+  VEV_5300                   $762        $1,500-2,500    +$0.7-1.7k
+  VEV_5400                   $546        $1,200-1,800    +$0.7-1.3k
+  VEV_5500                   $0          $100-400        +$0.1-0.4k
+  ──────────────────────────────────────────────────────────────────
+  Total voucher delta/day    $1,308      $4,800-8,300    +$3.5-7k
+
+The VEV_5000 wide-spread MM is the biggest single opportunity. It's
+underexploited because the current code doesn't have a dedicated layer
+for it — it falls through to the generic VOUCHer_STRIKES_TRADEABLE MM
+which posts at bb+1/ba-1 with only size 20.
+
+========================================================================
+PART 7: B&H vs MM/MT — THE DEFINITIVE ANSWER
+========================================================================
+
+                            B&H (300)      MM/Passive Bid
+  VEV_5000                 -$300 to +$5k   +$2-3.6k/day (MM, consistent)
+  VEV_5300                 -$500 to +$2.2k +$500-2k/day (passive, directional)
+  VEV_5400                 -$300 to +$1.7k +$300-1.2k/day (passive, directional)
+  VEV_5500                 -$100 to +$365  +$50-200/day (passive, tiny)
+
+MM/passive bid DOMINATES B&H because:
+  1. Lower cost basis — you buy at bid, not at ask (save 1-6 ticks/contract)
+  2. Gradual accumulation — if VFE drops, you haven't committed full size yet
+  3. No initial spread cost — B&H pays full ask-bid spread upfront
+  4. Consistent on flat days — MM earns spread even when VFE goes nowhere
+
+B&H only wins IF:
+  - You know VFE will drift up significantly (>30 points)
+  - AND you can enter at a tight spread
+  - AND you hold for 5000+ ticks
+
+For the 1k-tick website test: B&H is ALWAYS negative. MM/passive is the
+only viable approach.
+
+For 10k ticks: MM/passive wins on average. B&H wins on the best up-day
+(day 2: +28 drift) but loses on down-days. Risk-adjusted, MM wins.
+
+========================================================================
+PART 8: WHAT WON'T WORK (CONFIRMED DEAD ENDS)
+========================================================================
+
+1. Gamma scalping: gamma ~0.001, spread cost 1-6. PnL per tick =
+   0.5 * 0.001 * 9 = $0.005. Needs 200-1200 ticks to pay one spread.
+   NOT VIABLE.
+
+2. Short vol (sell OTM calls, delta-hedge): No buyer flow. You cannot
+   sell into a market where the taker only sells. Your ask will never
+   get lifted. NOT VIABLE.
+
+3. Symmetric MM on 5400/5500: Spread=1 means no inside room. Even at
+   spread=2, your ask never gets filled (no buyer flow). You're doing
+   one-sided accumulation disguised as MM. Just accept it.
+
+4. VFE-based timing for voucher entry: VFE has Sharpe ~0.2-0.3 at
+   10-tick horizon. A 0.3 Sharpe means 53% directional accuracy.
+   At delta 0.14-0.29, this gives ~0.04-0.09 ticks of edge per
+   voucher entry. Spread cost is 1-2 ticks. Timing loses.
+
+========================================================================
+PART 9: BOTTOM LINE
+========================================================================
+
+The voucher strategy should be structured as:
+
+  VEV_5000: Wide-spread MM (dedicated layer, size 30, cap ±150)
+  VEV_5300: Aggressive passive accumulation (size 20, cap +200)
+  VEV_5400: Passive accumulation (size 20, cap +250, post at bb when sp=1)
+  VEV_5500: Passive accumulation (size 20, cap +300, post at bb when sp=1)
+
+Total expected improvement over v22: +$3.5-7k/day.
+
+The single biggest lever is VEV_5000 MM ($2-3.6k/day), followed by
+scaling up OTM passive bids on 5300/5400 ($1.4-3k/day combined).
+
+All strategies are structural (100% seller flow is invariant across days,
+spread=6 on 5000 is invariant). The only variable is VFE direction,
+which determines whether accumulated longs appreciate or depreciate.

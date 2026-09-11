@@ -1,0 +1,226 @@
+HP IMPROVEMENT REASONING — "Profiting from the drop more efficiently"
+======================================================================
+Date: 2026-04-26
+Status: Analysis only, no code changes
+
+CONTEXT
+-------
+Current best: v22 (shipped as v11 variant). HP generates $10-53k/day depending
+on regime. The user observes HP "goes down from its local high" and wants to
+capture that drop more efficiently.
+
+Current v22 HP logic:
+  1. Wait for spread==17 AND mid > 10010 → SHORT to -200
+  2. Wait for spread==7 AND mid <= 8th-percentile(500-tick window) → COVER + FLIP to +200
+  3. HOLD +200 until mid >= 10020 or 1500-tick timeout → FLATTEN
+  4. Otherwise → passive MM (edge-beta calibrated, QUOTE_SIZE=25)
+
+========================================================================
+PART 1: WHAT THE DATA ACTUALLY SAYS ABOUT "DROPS FROM HIGHS"
+========================================================================
+
+HP is a bounded OU process centered at ~9990 with std ~31. The AC(1) on returns
+is -0.13 (mild mean reversion per tick). Spread=16 dominates 92-93% of ticks.
+
+SIGNAL RANKING (forward return at t+200, all 3 days):
+
+  Rank  Signal                          Mean     N/day  Win%  Cross-day?
+  ----  -----                           ----     -----  ----  ----------
+  1     spread==17 & mid>10010          -18.01   ~117   79.5  YES
+  2     spread==17 (any mid)            -17.40   ~128   77.0  YES
+  3     mid > ma200 + 20               -10.78   ~780   66.9  YES
+  4     sp>=15 & mid>ma200+10 & roc>0   -7.50   ~1692  61.1  YES
+  5     mid > ma200 + 10                -7.27   ~2282  62.0  YES
+  6     mid < ma500 - 15 (LONG)        +9.50    ~1900  67.0  YES
+  7     mid < ma200 - 20 (LONG)        +12.10   ~760   67.7  YES
+
+The spread=17 signal is overwhelmingly the best per-event, but it fires only
+~130 times/day. The mid>ma200+20 signal fires 6x more often with 2/3 the edge.
+
+========================================================================
+PART 2: WHERE THE CURRENT STRATEGY LEAVES MONEY ON THE TABLE
+========================================================================
+
+Problem 1: BINARY ON/OFF — Only one short signal (spread==17)
+-------------------------------------------------------------
+Between S17 events (which are 1.3% of ticks), the strategy sits in passive MM.
+During those 9,870 ticks/day, mid>ma200+20 fires ~780 times with -10.8 expected
+return at t+200, 67% win rate. That's 780 * 10.8 * (some fill fraction) of
+unrealized edge. Even at 30% capture with half-size (100 units):
+  780 * 0.30 * 10.8 * (100/200) = ~$1,263/day of untapped alpha.
+
+The strategy currently earns $0 directional PnL during these 9,870 "dead" ticks
+(passive MM earns spread capture but zero directional).
+
+Problem 2: FLIP EXIT IS CRUDE
+------------------------------
+After S7 cover + flip to +200, v22 holds until mid >= 10020 or 1500-tick timeout.
+Analysis from missing_alpha/02_flip_optimal_exit.py shows:
+  - Optimal mid-target is 10010-10015, not 10020
+  - 10020 works best on day 2 but leaves PnL on table on days 0/1 where mid
+    often doesn't reach 10020, triggering the 1500-tick timeout instead
+  - A trailing stop (v26 approach: TRAIL_DELTA=15 from peak) exits earlier
+    when the rebound stalls, capturing 60-80% of the move vs 40-60% with fixed
+
+The timeout exit at 1500 ticks is particularly wasteful. If mid reaches 10012
+at tick 800 then drifts sideways, you hold for 700 more ticks earning nothing
+while a trailing stop would have exited at 10012-15=9997... wait, that's wrong.
+The trailing stop tracks the peak and exits when mid drops TRAIL_DELTA below it.
+So if peak=10012, exit at 10012-15=9997. That's actually worse than holding.
+
+Better approach: EXIT when mid >= 10010 OR (peak_since_flip > 10005 AND
+mid < peak_since_flip - 8). This captures the "mid reached a decent level but
+is now rolling over" case without the pathological timeout.
+
+Problem 3: PASSIVE MM BLEEDS IN TIGHT SPREADS
+----------------------------------------------
+Analysis from hp_deadzone_analysis.py and hp_inv_aware_mm.py shows:
+  - Wide spread (>=9) passive MM: profitable, ~3 ticks/fill captured
+  - Tight spread (7-8): adverse selection dominates, losing money
+  - Inventory suppression at |pos|>80 partially fixes this
+
+Current v22 posts passive quotes at ALL spreads. Suppressing quotes when
+spread <= 8 removes the bleed source. Cost: ~5-10% fewer fills in dead zones.
+Benefit: eliminates the adverse selection drag.
+
+Problem 4: NO INDEPENDENT LONG ENTRY
+--------------------------------------
+The only way v22 goes long is via the S7 cover+flip (which requires a prior
+S17 short). Independent long entries at mid < ma200 - 20 have:
+  t+200: +12.1, 67.7% win rate, ~760 events/day
+
+This is comparable in magnitude to the short signals. Currently 100% untapped.
+A simple "if mid < ma200 - 20 AND position >= 0 AND no S17 active → BUY to
++100 (half-size, conservative)" would add structural alpha.
+
+Problem 5: SIZING IS ALWAYS MAX
+---------------------------------
+v22 always goes to ±200 on S17 entry and ±200 on FLIP. The advisor's principle
+applies here too: scale exposure to signal strength.
+
+  - spread==17 & mid > 10030 (99th percentile of S17 mids): go full -200
+  - spread==17 & mid in [10010, 10020]: go -150
+  - mid > ma200+20 (no S17): go -100
+  - mid > ma200+10 (weakest): go -50
+
+This reduces drawdown on false signals while maintaining full exposure on the
+highest-conviction entries.
+
+========================================================================
+PART 3: WHAT WOULD A "MORE EFFICIENT" HP STRATEGY LOOK LIKE?
+========================================================================
+
+Layer architecture (non-overlapping, priority-ordered):
+
+  LAYER 0 (highest priority): S17 GIGA SHORT
+    Trigger: spread==17 AND mid > 10010
+    Action:  SHORT to -200 aggressively (hit bid)
+    Exit:    S7 bottom (existing) or adaptive trailing stop
+    Edge:    -18.01 at t+200, 79.5% win rate
+    Status:  ALREADY IMPLEMENTED in v22
+
+  LAYER 1: TREND-REVERSION SHORT
+    Trigger: mid > ma200 + 20 AND no S17 active AND position > -100
+    Action:  SHORT to max(-100, -(mid - ma200) * 5) [scaled]
+    Exit:    mid < ma200 + 5 (revert to mean vicinity)
+    Edge:    -10.78 at t+200, 66.9% win rate
+    Status:  NOT IMPLEMENTED — biggest marginal gain
+
+  LAYER 2: MEAN-REVERSION LONG
+    Trigger: mid < ma200 - 20 AND no S17/S7 active AND position < +100
+    Action:  BUY to min(+100, (ma200 - mid) * 5) [scaled]
+    Exit:    mid > ma200 - 5
+    Edge:    +12.10 at t+200, 67.7% win rate
+    Status:  NOT IMPLEMENTED — symmetric to Layer 1
+
+  LAYER 3: FLIP HOLD (improved exit)
+    Trigger: FLIP complete (position == +200)
+    Exit:    mid >= 10010 (lowered from 10020)
+             OR (peak_since_flip >= 10005 AND mid < peak - 8)
+             OR timeout 1000 ticks (reduced from 1500)
+    Status:  PARTIALLY IMPLEMENTED (v22 has 10020/1500)
+
+  LAYER 4: PASSIVE MM (filtered)
+    Trigger: no directional signal active AND spread >= 9
+    Action:  quote bid/ask at mid ± skew, QUOTE_SIZE=25
+    Exit:    continuous
+    Filter:  SUPPRESS when spread <= 8 (avoid adverse selection)
+    Status:  PARTIALLY IMPLEMENTED (v22 doesn't filter by spread)
+
+========================================================================
+PART 4: EXPECTED IMPACT (CONSERVATIVE ESTIMATES)
+========================================================================
+
+                                  Current v22     Improved        Delta
+                                  (10k day avg)   (estimated)
+  S17 cycles                      $15-25k         $15-25k         $0
+  Trend-reversion shorts (L1)     $0              $2-4k           +$2-4k
+  Mean-reversion longs (L2)       $0              $1-3k           +$1-3k
+  Better FLIP exit (L3)           included above  +$1-2k          +$1-2k
+  Passive MM (filtered, L4)       $2-5k           $3-6k           +$1k
+  ------------------------------------------------------------------
+  TOTAL HP per day (10k)          ~$20-30k        ~$24-38k        +$4-10k
+
+Cross-day stability: ALL signals tested on all 3 CSV days. The trend-reversion
+short (Layer 1) shows the weakest day-1 performance (-2.8 at t+200 vs -22.3 on
+day 0), but remains negative on all days. This is the riskiest addition.
+
+========================================================================
+PART 5: WHAT WON'T WORK (ALREADY TESTED)
+========================================================================
+
+1. Aggressive take at S17 (TAKE_OFFSET > 0): -$80k 3-day from adverse selection
+   on MM bot quotes. Never cross at worse-than-best.
+
+2. S15 GIGA LONG (mirror of S17 SHORT): -$8.9k 3-day. Spread=15 is 2.2-2.9% of
+   ticks but NOT a reversal signal — it's just slightly below normal=16.
+
+3. Taker flow prediction: AC < 2 on all 3 days. Not actionable.
+
+4. Volatility-based timing: realized vol correlation with spread = -0.03. Useless.
+
+5. OBI alpha: beta=0.30 but spread=20 >> signal. Always spread-dominated.
+
+6. IV smile z-score for timing HP: half-life 1-30 ticks, not 100-200. Too fast.
+
+========================================================================
+PART 6: RISKS AND CAVEATS
+========================================================================
+
+1. All signals are tested on the 3 CSV days provided. The live round may have
+   different microstructure (different bot parameters, different TTE, etc.).
+
+2. The ma200 signals (Layers 1 and 2) require a 200-tick warmup. First 200 ticks
+   of day 2 (the website test window) will miss early signals.
+
+3. Position limit interactions: if Layer 1 puts us at -100 and then S17 fires,
+   we need headroom to go to -200. Must enforce priority ordering.
+
+4. The BT overpredicts fills by ~30-56% vs website (from R1 calibration). Edges
+   will be smaller live. The 67% win rate on Layer 1 may drop to 60% live.
+
+5. Adding more layers increases code complexity and traderData size. The 50KB
+   traderData cap is a hard constraint. Each rolling buffer costs bytes.
+
+========================================================================
+PART 7: BOTTOM LINE
+========================================================================
+
+The biggest single improvement is LAYER 1 (trend-reversion shorts when
+mid > ma200 + 20). It fires 780 times/day with -10.8 expected return, is
+stable across all 3 days, requires no new data structures (just a rolling
+mean you're already computing), and slots cleanly below the S17 priority.
+
+The second biggest is LAYER 2 (mean-reversion longs from below). The long side
+is actually MORE consistent cross-day than the short side (the long mean is
++12.1 vs short -10.8, and the cross-day variance is lower).
+
+Together these two layers could add $3-7k/day to the existing $20-30k HP
+baseline, all from structural signals that work on every CSV day.
+
+The FLIP exit improvement (Layer 3) is lower risk, lower reward: ~$1-2k/day
+from tightening the exit target from 10020 to 10010 and reducing timeout from
+1500 to 1000.
+
+None of these require hardcoded trajectories or memorized data. All are
+structural signals derived from the OU-process microstructure of HP.

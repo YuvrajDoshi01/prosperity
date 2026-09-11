@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Log Analyzer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a38;
+    --border2: #3a3a4a;
+    --text: #e8e8f0;
+    --text2: #8888a0;
+    --text3: #555568;
+    --blue: #4a8fff;
+    --blue-dim: rgba(74,143,255,0.15);
+    --amber: #ffb347;
+    --amber-dim: rgba(255,179,71,0.15);
+    --green: #3ddc84;
+    --green-dim: rgba(61,220,132,0.12);
+    --red: #ff5f5f;
+    --red-dim: rgba(255,95,95,0.12);
+    --purple: #a78bfa;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; min-height: 100vh; }
+
+  /* HEADER */
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+  }
+  .header-title { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: 0.05em; }
+  .header-sub { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); flex-shrink: 0; }
+
+  /* UPLOAD ZONE */
+  #upload-section {
+    display: flex;
+    gap: 16px;
+    padding: 24px;
+    align-items: stretch;
+  }
+  .upload-card {
+    flex: 1;
+    border: 1px dashed var(--border2);
+    border-radius: 8px;
+    padding: 32px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+  .upload-card:hover, .upload-card.drag { border-color: var(--blue); background: var(--blue-dim); }
+  .upload-card.loaded { border-style: solid; border-color: var(--green); background: var(--green-dim); }
+  .upload-card.loaded.amber { border-color: var(--amber); background: var(--amber-dim); }
+  .upload-label { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .upload-label.blue { color: var(--blue); }
+  .upload-label.amber { color: var(--amber); }
+  .upload-hint { font-size: 12px; color: var(--text3); margin-top: 8px; }
+  .upload-status { font-size: 12px; color: var(--text2); margin-top: 6px; font-family: var(--mono); }
+  input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  /* ANALYZE BUTTON */
+  .analyze-wrap { padding: 0 24px 24px; }
+  #analyzeBtn {
+    width: 100%;
+    padding: 12px;
+    background: var(--blue);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  #analyzeBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+  #analyzeBtn:not(:disabled):hover { opacity: 0.85; }
+
+  /* MAIN LAYOUT */
+  #dashboard { display: none; padding: 0 24px 40px; }
+
+  /* STAT ROW */
+  .stat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px; }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+  }
+  .stat-card .label { font-size: 10px; font-family: var(--mono); color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
+  .stat-card .val { font-size: 18px; font-family: var(--mono); font-weight: 600; color: var(--text); }
+  .stat-card .val.blue { color: var(--blue); }
+  .stat-card .val.amber { color: var(--amber); }
+  .stat-card .val.green { color: var(--green); }
+  .stat-card .val.red { color: var(--red); }
+  .stat-card .sub { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 2px; margin-bottom: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 3px; width: fit-content; }
+  .tab-btn {
+    padding: 6px 14px;
+    border: none;
+    background: none;
+    color: var(--text3);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .tab-btn.active { background: var(--surface2); color: var(--text); }
+  .tab-btn:hover:not(.active) { color: var(--text2); }
+
+  /* PANEL */
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .panel-title { font-family: var(--mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 14px; }
+
+  /* CHART CONTAINERS */
+  .chart-wrap { position: relative; width: 100%; }
+  .h240 { height: 240px; }
+  .h300 { height: 300px; }
+  .h200 { height: 200px; }
+
+  /* LEGEND */
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; }
+  .leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); font-family: var(--mono); }
+  .leg-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  /* GRID 2 COL */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* PRODUCT FILTER */
+  .product-row { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+  .prod-btn {
+    padding: 5px 12px;
+    border: 1px solid var(--border2);
+    background: none;
+    color: var(--text3);
+    font-family: var(--mono);
+    font-size: 11px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .prod-btn.active { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+
+  /* TABLE */
+  .mini-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11px; }
+  .mini-table th { color: var(--text3); text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--border); font-weight: 500; }
+  .mini-table td { padding: 5px 8px; border-bottom: 1px solid rgba(42,42,56,0.5); color: var(--text2); }
+  .mini-table td.pos { color: var(--green); }
+  .mini-table td.neg { color: var(--red); }
+  .mini-table td.hi { color: var(--text); }
+
+  /* FINDINGS */
+  .finding { border-left: 2px solid var(--red); background: rgba(255,95,95,0.04); padding: 10px 14px; border-radius: 0 6px 6px 0; margin-bottom: 8px; }
+  .finding.warn { border-color: var(--amber); background: rgba(255,179,71,0.04); }
+  .finding.ok { border-color: var(--green); background: rgba(61,220,132,0.04); }
+  .finding-title { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .finding-body { font-size: 11px; color: var(--text2); line-height: 1.6; font-family: var(--mono); }
+
+  /* RANGE SLIDER */
+  .range-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .range-row label { font-size: 11px; color: var(--text3); font-family: var(--mono); min-width: 80px; }
+  input[type=range] { flex: 1; accent-color: var(--blue); }
+  .range-val { font-size: 11px; color: var(--text2); font-family: var(--mono); min-width: 50px; text-align: right; }
+
+  /* SCROLLABLE */
+  .scroll-x { overflow-x: auto; }
+
+  /* empty state */
+  .empty { text-align: center; padding: 60px 20px; color: var(--text3); font-family: var(--mono); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="dot"></div>
+  <div>
+    <div class="header-title">TRADING LOG ANALYZER</div>
+    <div class="header-sub">r1_v17 · post-mortem dashboard</div>
+  </div>
+</div>
+
+<div id="upload-section">
+  <div class="upload-card" id="devCard">
+    <input type="file" id="devFile" accept=".log,.json">
+    <div class="upload-label blue">DEV LOG</div>
+    <div style="font-size:28px;margin:8px 0;color:var(--text3)">&#x2B06;</div>
+    <div class="upload-hint">Drop or click &mdash; training/dev run</div>
+    <div class="upload-status" id="devStatus">no file loaded</div>
+  </div>
+  <div class="upload-card amber" id="realCard">
+    <input type="file" id="realFile" accept=".log,.json">
+    <div class="upload-label amber">REAL LOG</div>
+    <div style="font-size:28px;margin:8px 0;color:var(--text3)">&#x2B06;</div>
+    <div class="upload-hint">Drop or click &mdash; live submission</div>
+    <div class="upload-status" id="realStatus">no file loaded</div>
+  </div>
+</div>
+
+<div class="analyze-wrap">
+  <button id="analyzeBtn" disabled>LOAD FILES FIRST</button>
+</div>
+
+<div id="dashboard">
+
+  <div class="stat-grid" id="statGrid"></div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('pnl')">PnL Timeline</button>
+    <button class="tab-btn" onclick="switchTab('book')">Book / Spread</button>
+    <button class="tab-btn" onclick="switchTab('trades')">Trade Prices</button>
+    <button class="tab-btn" onclick="switchTab('pos')">Positions</button>
+    <button class="tab-btn" onclick="switchTab('findings')">Findings</button>
+  </div>
+
+  <div id="tab-pnl">
+    <div class="product-row">
+      <span style="font-size:11px;color:var(--text3);font-family:var(--mono)">PRODUCT:</span>
+      <button class="prod-btn active" onclick="setProd('pnl','ALL',this)">ALL</button>
+      <button class="prod-btn" onclick="setProd('pnl','ACO',this)">ACO</button>
+      <button class="prod-btn" onclick="setProd('pnl','IPR',this)">IPR</button>
+    </div>
+    <div class="panel">
+      <div class="panel-title">cumulative PnL over run (normalized time 0-1)</div>
+      <div class="legend">
+        <div class="leg"><div class="leg-dot" style="background:var(--blue)"></div>Real run</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>Dev run</div>
+      </div>
+      <div class="chart-wrap h300"><canvas id="pnlChart"></canvas></div>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-title">PnL rate (per 1% of run)</div>
+        <div class="chart-wrap h200"><canvas id="pnlRateChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">PnL breakdown &mdash; final</div>
+        <div class="chart-wrap h200"><canvas id="pnlBreakChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-book" style="display:none">
+    <div class="product-row">
+      <span style="font-size:11px;color:var(--text3);font-family:var(--mono)">PRODUCT:</span>
+      <button class="prod-btn active" onclick="setProd('book','ACO',this)">ACO</button>
+      <button class="prod-btn" onclick="setProd('book','IPR',this)">IPR</button>
+    </div>
+    <div class="panel">
+      <div class="panel-title">bid / mid / ask bands over time</div>
+      <div class="legend">
+        <div class="leg"><div class="leg-dot" style="background:var(--blue)"></div>Real mid</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--blue);opacity:0.3"></div>Real bid/ask</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>Dev mid</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--amber);opacity:0.3"></div>Dev bid/ask</div>
+      </div>
+      <div class="range-row">
+        <label>Zoom start</label>
+        <input type="range" id="zoomStart" min="0" max="95" value="0" step="1" oninput="updateZoom()">
+        <span class="range-val" id="zoomStartVal">0%</span>
+        <label style="margin-left:12px">Zoom end</label>
+        <input type="range" id="zoomEnd" min="5" max="100" value="100" step="1" oninput="updateZoom()">
+        <span class="range-val" id="zoomEndVal">100%</span>
+      </div>
+      <div class="chart-wrap h300"><canvas id="bookChart"></canvas></div>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-title">spread distribution (ticks)</div>
+        <div class="chart-wrap h200"><canvas id="spreadDistChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">spread stats</div>
+        <div id="spreadStatsTable"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-trades" style="display:none">
+    <div class="product-row">
+      <span style="font-size:11px;color:var(--text3);font-family:var(--mono)">PRODUCT:</span>
+      <button class="prod-btn active" onclick="setProd('trades','ACO',this)">ACO</button>
+      <button class="prod-btn" onclick="setProd('trades','IPR',this)">IPR</button>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-title">our trade prices &mdash; real run</div>
+        <div class="legend">
+          <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Buys</div>
+          <div class="leg"><div class="leg-dot" style="background:var(--red)"></div>Sells</div>
+        </div>
+        <div class="chart-wrap h240"><canvas id="tradePriceReal"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">our trade prices &mdash; dev run</div>
+        <div class="legend">
+          <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Buys</div>
+          <div class="leg"><div class="leg-dot" style="background:var(--red)"></div>Sells</div>
+        </div>
+        <div class="chart-wrap h240"><canvas id="tradePriceDev"></canvas></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">trade price distribution &mdash; buys vs sells</div>
+      <div class="chart-wrap h240"><canvas id="tradePriceDist"></canvas></div>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-title">trade stats &mdash; real</div>
+        <div id="tradeStatsReal"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">trade stats &mdash; dev</div>
+        <div id="tradeStatsDev"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-pos" style="display:none">
+    <div class="product-row">
+      <span style="font-size:11px;color:var(--text3);font-family:var(--mono)">PRODUCT:</span>
+      <button class="prod-btn active" onclick="setProd('pos','ACO',this)">ACO</button>
+      <button class="prod-btn" onclick="setProd('pos','IPR',this)">IPR</button>
+    </div>
+    <div class="panel">
+      <div class="panel-title">position over time (reconstructed from trades)</div>
+      <div class="legend">
+        <div class="leg"><div class="leg-dot" style="background:var(--blue)"></div>Real run</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>Dev run</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--red);opacity:0.5"></div>&plusmn;80 limit</div>
+      </div>
+      <div class="chart-wrap h300"><canvas id="posChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">time spent at each position level</div>
+      <div class="chart-wrap h200"><canvas id="posHistChart"></canvas></div>
+    </div>
+  </div>
+
+  <div id="tab-findings" style="display:none">
+    <div id="findingsContainer"></div>
+  </div>
+
+</div>
+
+<script>
+let devData = null, realData = null;
+let charts = {};
+let curProd = { pnl: 'ALL', book: 'ACO', trades: 'ACO', pos: 'ACO' };
+let curTab = 'pnl';
+
+function setupFileInput(inputId, cardId, statusId, slot) {
+  const input = document.getElementById(inputId);
+  const card = document.getElementById(cardId);
+  const status = document.getElementById(statusId);
+
+  input.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    status.textContent = 'reading...';
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const parsed = parseLog(JSON.parse(ev.target.result));
+        if (slot === 'dev') devData = parsed;
+        else realData = parsed;
+        card.classList.add('loaded');
+        if (slot === 'real') card.classList.add('amber');
+        status.textContent = 'OK ' + file.name + ' (' + parsed.ticks + ' ticks)';
+        checkReady();
+      } catch(err) {
+        status.textContent = 'parse error: ' + err.message;
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  card.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drag'); });
+  card.addEventListener('dragleave', () => card.classList.remove('drag'));
+  card.addEventListener('drop', e => {
+    e.preventDefault(); card.classList.remove('drag');
+    const file = e.dataTransfer.files[0];
+    if (file) { const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files; input.dispatchEvent(new Event('change')); }
+  });
+}
+
+function checkReady() {
+  const btn = document.getElementById('analyzeBtn');
+  const ready = devData && realData;
+  btn.disabled = !ready;
+  btn.textContent = ready ? 'ANALYZE BOTH LOGS' : 'LOAD FILES FIRST';
+}
+
+function parseLog(json) {
+  const activities = json.activitiesLog.split('\n');
+  const rows = [];
+
+  for (let i = 1; i < activities.length; i++) {
+    const line = activities[i];
+    if (!line.trim()) continue;
+    const p = line.split(';');
+    if (p.length < 17) continue;
+    rows.push({
+      day: +p[0],
+      ts: +p[1],
+      product: p[2],
+      bid1: p[3] ? +p[3] : null,
+      ask1: p[9] ? +p[9] : null,
+      mid: p[15] ? +p[15] : null,
+      pnl: p[16] ? +p[16] : 0
+    });
+  }
+
+  const trades = json.tradeHistory || [];
+  const subTrades = trades.filter(t => t.buyer === 'SUBMISSION' || t.seller === 'SUBMISSION');
+  const maxTs = Math.max.apply(null, rows.map(r => r.ts));
+
+  return { rows, trades, subTrades, maxTs, ticks: maxTs / 100 + 1 };
+}
+
+function getRows(data, product) {
+  return data.rows.filter(r => r.product === product);
+}
+function getTrades(data, sym) {
+  return data.subTrades.filter(t => t.symbol === sym);
+}
+function avg(arr) { return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
+function med(arr) { if (!arr.length) return 0; const s=[...arr].sort((a,b)=>a-b); return s[Math.floor(s.length/2)]; }
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); charts[id] = null; } }
+
+function dsample(xs, ys, n) {
+  if (xs.length <= n) return { xs, ys };
+  const step = xs.length / n;
+  const oxs = [], oys = [];
+  for (let i = 0; i < n; i++) {
+    const idx = Math.floor(i * step);
+    oxs.push(xs[idx]);
+    oys.push(ys[idx]);
+  }
+  return { xs: oxs, ys: oys };
+}
+
+function mkChart(id, config) {
+  destroyChart(id);
+  const ctx = document.getElementById(id).getContext('2d');
+  charts[id] = new Chart(ctx, config);
+  return charts[id];
+}
+
+const BLUE = 'rgba(74,143,255,';
+const AMBER = 'rgba(255,179,71,';
+const GREEN = 'rgba(61,220,132,';
+const RED = 'rgba(255,95,95,';
+
+const baseOpts = {
+  responsive: true, maintainAspectRatio: false, animation: false,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { ticks: { color: '#555568', font: { size: 10, family: "'IBM Plex Mono'" }, maxTicksLimit: 10 }, grid: { color: 'rgba(42,42,56,0.8)' }, border: { color: 'var(--border)' } },
+    y: { ticks: { color: '#555568', font: { size: 10, family: "'IBM Plex Mono'" } }, grid: { color: 'rgba(42,42,56,0.8)' }, border: { color: 'var(--border)' } }
+  }
+};
+
+function deepMerge(target, source) {
+  const out = Object.assign({}, target);
+  for (const key in source) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      out[key] = deepMerge(target[key] || {}, source[key]);
+    } else {
+      out[key] = source[key];
+    }
+  }
+  return out;
+}
+
+function switchTab(tab) {
+  curTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  ['pnl','book','trades','pos','findings'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t === tab ? '' : 'none';
+  });
+  renderTab(tab);
+}
+
+function setProd(tab, prod, btn) {
+  curProd[tab] = prod;
+  btn.closest('.product-row').querySelectorAll('.prod-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTab(tab);
+}
+
+function analyze() {
+  document.getElementById('dashboard').style.display = 'block';
+  renderStats();
+  renderTab('pnl');
+}
+
+function renderTab(tab) {
+  if (tab === 'pnl') renderPnL();
+  else if (tab === 'book') renderBook();
+  else if (tab === 'trades') renderTrades();
+  else if (tab === 'pos') renderPos();
+  else if (tab === 'findings') renderFindings();
+}
+
+function renderStats() {
+  const rIPR = getRows(realData, 'INTARIAN_PEPPER_ROOT');
+  const rACO = getRows(realData, 'ASH_COATED_OSMIUM');
+  const dIPR = getRows(devData, 'INTARIAN_PEPPER_ROOT');
+  const dACO = getRows(devData, 'ASH_COATED_OSMIUM');
+
+  const rLastIPR = rIPR.length ? rIPR[rIPR.length-1] : {pnl:0};
+  const rLastACO = rACO.length ? rACO[rACO.length-1] : {pnl:0};
+  const dLastIPR = dIPR.length ? dIPR[dIPR.length-1] : {pnl:0};
+  const dLastACO = dACO.length ? dACO[dACO.length-1] : {pnl:0};
+
+  const rTotalPnl = (rLastIPR.pnl||0) + (rLastACO.pnl||0);
+  const dTotalPnl = (dLastIPR.pnl||0) + (dLastACO.pnl||0);
+
+  const rIPRMids = rIPR.filter(r=>r.mid).map(r=>r.mid);
+  const dIPRMids = dIPR.filter(r=>r.mid).map(r=>r.mid);
+
+  const rSubACO = getTrades(realData, 'ASH_COATED_OSMIUM');
+  const rTotalACO = realData.trades.filter(t=>t.symbol==='ASH_COATED_OSMIUM');
+  const volShare = rTotalACO.length ? (rSubACO.length / rTotalACO.length * 100) : 0;
+
+  const rSpreads = rACO.filter(r=>r.bid1&&r.ask1).map(r=>r.ask1-r.bid1);
+  const dSpreads = dACO.filter(r=>r.bid1&&r.ask1).map(r=>r.ask1-r.bid1);
+
+  const rIPRLast = rIPRMids.length ? rIPRMids[rIPRMids.length-1] : 0;
+  const dIPRLast = dIPRMids.length ? dIPRMids[dIPRMids.length-1] : 0;
+  const rIPRFirst = rIPRMids[0] || 0;
+  const dIPRFirst = dIPRMids[0] || 0;
+
+  const stats = [
+    { label: 'Real total PnL', val: Math.round(rTotalPnl).toLocaleString(), cls: 'green', sub: realData.ticks.toLocaleString() + ' ticks' },
+    { label: 'Dev total PnL', val: Math.round(dTotalPnl).toLocaleString(), cls: 'amber', sub: devData.ticks.toLocaleString() + ' ticks' },
+    { label: 'IPR drift (real)', val: (rIPRLast-rIPRFirst).toFixed(0), cls: rIPRLast>rIPRFirst?'green':'red', sub: rIPRFirst.toFixed(0) + ' to ' + rIPRLast.toFixed(0) },
+    { label: 'IPR drift (dev)', val: (dIPRLast-dIPRFirst).toFixed(0), cls: 'amber', sub: dIPRFirst.toFixed(0) + ' to ' + dIPRLast.toFixed(0) },
+    { label: 'ACO vol share', val: volShare.toFixed(1)+'%', cls: volShare>80?'green':volShare>60?'amber':'red', sub: rSubACO.length + ' / ' + rTotalACO.length + ' trades' },
+    { label: 'ACO spread (real)', val: med(rSpreads).toFixed(0), cls: 'blue', sub: 'median ticks. dev: ' + med(dSpreads).toFixed(0) },
+  ];
+
+  document.getElementById('statGrid').innerHTML = stats.map(s =>
+    '<div class="stat-card">' +
+      '<div class="label">' + s.label + '</div>' +
+      '<div class="val ' + s.cls + '">' + s.val + '</div>' +
+      '<div class="sub">' + s.sub + '</div>' +
+    '</div>'
+  ).join('');
+}
+
+function renderPnL() {
+  const prod = curProd.pnl;
+  const N = 400;
+
+  function getPnLSeries(data, p) {
+    const acoRows = data.rows.filter(r => r.product === 'ASH_COATED_OSMIUM');
+    const iprRows = data.rows.filter(r => r.product === 'INTARIAN_PEPPER_ROOT');
+
+    let series;
+    if (p === 'ALL') {
+      const acoMap = {}, iprMap = {};
+      for (const r of acoRows) acoMap[r.ts] = r.pnl;
+      for (const r of iprRows) iprMap[r.ts] = r.pnl;
+      const allTs = [...new Set([...Object.keys(acoMap), ...Object.keys(iprMap)])].map(Number).sort((a,b)=>a-b);
+      let lastAco = 0, lastIpr = 0;
+      series = allTs.map(ts => {
+        if (acoMap[ts] !== undefined) lastAco = acoMap[ts];
+        if (iprMap[ts] !== undefined) lastIpr = iprMap[ts];
+        return { x: ts / data.maxTs, y: lastAco + lastIpr };
+      });
+    } else {
+      const filtered = p === 'ACO' ? acoRows : iprRows;
+      series = filtered.map(r => ({ x: r.ts / data.maxTs, y: r.pnl }));
+    }
+    return series;
+  }
+
+  const rSeries = getPnLSeries(realData, prod);
+  const dSeries = getPnLSeries(devData, prod);
+
+  const dsR = dsample(rSeries.map(s=>s.x), rSeries.map(s=>s.y), N);
+  const dsD = dsample(dSeries.map(s=>s.x), dSeries.map(s=>s.y), N);
+
+  mkChart('pnlChart', {
+    type: 'line',
+    data: {
+      datasets: [
+        { label: 'Real', data: dsR.xs.map((x,i)=>({x: +(x*100).toFixed(2), y:dsR.ys[i]})), borderColor: BLUE+'0.9)', backgroundColor: BLUE+'0.08)', fill: true, pointRadius: 0, borderWidth: 2 },
+        { label: 'Dev',  data: dsD.xs.map((x,i)=>({x: +(x*100).toFixed(2), y:dsD.ys[i]})), borderColor: AMBER+'0.9)', backgroundColor: AMBER+'0.06)', fill: true, pointRadius: 0, borderWidth: 2, borderDash: [5,3] },
+      ]
+    },
+    options: deepMerge(baseOpts, {
+      scales: {
+        x: { type: 'linear', min: 0, max: 100, ticks: { callback: v => v+'%', maxTicksLimit: 11, color:'#555568', font:{size:10,family:"'IBM Plex Mono'"} }, grid:{color:'rgba(42,42,56,0.8)'}, border:{color:'var(--border)'} },
+        y: { ticks: { callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v, color:'#555568', font:{size:10,family:"'IBM Plex Mono'"} }, grid:{color:'rgba(42,42,56,0.8)'}, border:{color:'var(--border)'} }
+      }
+    })
+  });
+
+  function pnlRate(series, buckets) {
+    buckets = buckets || 10;
+    const bucket = 1/buckets;
+    const rates = [];
+    for (let i = 0; i < buckets; i++) {
+      const lo = i*bucket, hi = (i+1)*bucket;
+      const inBucket = series.filter(s => s.x >= lo && s.x < hi);
+      if (inBucket.length < 2) { rates.push(0); continue; }
+      rates.push(inBucket[inBucket.length-1].y - inBucket[0].y);
+    }
+    return rates;
+  }
+
+  const rRate = pnlRate(rSeries);
+  const dRate = pnlRate(dSeries);
+  const labels10 = Array.from({length:10},(_,i)=>(i*10)+'-'+((i+1)*10)+'%');
+
+  mkChart('pnlRateChart', {
+    type: 'bar',
+    data: {
+      labels: labels10,
+      datasets: [
+        { label: 'Real', data: rRate, backgroundColor: rRate.map(v=>v>=0?BLUE+'0.6)':RED+'0.6)'), borderColor: rRate.map(v=>v>=0?BLUE+'0.9)':RED+'0.9)'), borderWidth: 1 },
+        { label: 'Dev', data: dRate, backgroundColor: dRate.map(v=>v>=0?AMBER+'0.35)':RED+'0.35)'), borderColor: dRate.map(v=>v>=0?AMBER+'0.7)':RED+'0.7)'), borderWidth: 1 },
+      ]
+    },
+    options: deepMerge(baseOpts, { scales: { x: { ticks: { maxRotation: 30 } }, y: { ticks: { callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v } } } })
+  });
+
+  const rACOpnl = (function(){ const rows=getRows(realData,'ASH_COATED_OSMIUM'); return rows.length?rows[rows.length-1].pnl:0; })();
+  const rIPRpnl = (function(){ const rows=getRows(realData,'INTARIAN_PEPPER_ROOT'); return rows.length?rows[rows.length-1].pnl:0; })();
+  const dACOpnl = (function(){ const rows=getRows(devData,'ASH_COATED_OSMIUM'); return rows.length?rows[rows.length-1].pnl:0; })();
+  const dIPRpnl = (function(){ const rows=getRows(devData,'INTARIAN_PEPPER_ROOT'); return rows.length?rows[rows.length-1].pnl:0; })();
+
+  mkChart('pnlBreakChart', {
+    type: 'bar',
+    data: {
+      labels: ['Real', 'Dev'],
+      datasets: [
+        { label: 'ACO', data: [rACOpnl, dACOpnl], backgroundColor: [BLUE+'0.7)', BLUE+'0.35)'], borderColor: [BLUE+'1)', BLUE+'0.7)'], borderWidth: 1 },
+        { label: 'IPR', data: [rIPRpnl, dIPRpnl], backgroundColor: [GREEN+'0.7)', GREEN+'0.35)'], borderColor: [GREEN+'1)', GREEN+'0.7)'], borderWidth: 1 },
+      ]
+    },
+    options: deepMerge(baseOpts, { plugins: { legend: { display: true, labels: { color:'#8888a0', font:{size:11} } } }, scales: { x: {stacked: true}, y: {stacked: true, ticks: { callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v }} } })
+  });
+}
+
+let bookZoom = { start: 0, end: 1 };
+function updateZoom() {
+  const s = +document.getElementById('zoomStart').value / 100;
+  const e = +document.getElementById('zoomEnd').value / 100;
+  document.getElementById('zoomStartVal').textContent = Math.round(s*100)+'%';
+  document.getElementById('zoomEndVal').textContent = Math.round(e*100)+'%';
+  bookZoom = { start: s, end: Math.max(e, s+0.05) };
+  renderBookChart();
+}
+
+function renderBook() {
+  renderBookChart();
+  renderSpreadDist();
+}
+
+function renderBookChart() {
+  const sym = curProd.book === 'ACO' ? 'ASH_COATED_OSMIUM' : 'INTARIAN_PEPPER_ROOT';
+  const N = 300;
+
+  function getBookSeries(data) {
+    const rows = getRows(data, sym).filter(r => r.bid1 && r.ask1 && r.mid);
+    const lo = bookZoom.start, hi = bookZoom.end;
+    const filtered = rows.filter(r => {
+      const t = r.ts / data.maxTs;
+      return t >= lo && t <= hi;
+    });
+    const ds = dsample(filtered.map(r=>r.ts/data.maxTs), filtered, N);
+    return ds;
+  }
+
+  const rDs = getBookSeries(realData);
+  const dDs = getBookSeries(devData);
+
+  function toXY(ds, field) {
+    return ds.xs.map((x, i) => ({ x: +(x*100).toFixed(2), y: ds.ys[i][field] })).filter(p => p.y != null);
+  }
+
+  const linearXOpts = {
+    x: { type: 'linear', min: +(bookZoom.start*100).toFixed(1), max: +(bookZoom.end*100).toFixed(1),
+         ticks: { callback: v => v+'%', maxTicksLimit: 11, color:'#555568', font:{size:10,family:"'IBM Plex Mono'"} },
+         grid:{color:'rgba(42,42,56,0.8)'}, border:{color:'var(--border)'} },
+    y: { ticks:{color:'#555568',font:{size:10,family:"'IBM Plex Mono'"}}, grid:{color:'rgba(42,42,56,0.8)'}, border:{color:'var(--border)'} }
+  };
+
+  mkChart('bookChart', {
+    type: 'line',
+    data: {
+      datasets: [
+        { label: 'Real ask', data: toXY(rDs,'ask1'), borderColor: BLUE+'0.2)', backgroundColor: BLUE+'0.07)', fill: '+1', pointRadius: 0, borderWidth: 1 },
+        { label: 'Real mid', data: toXY(rDs,'mid'),  borderColor: BLUE+'0.9)', backgroundColor: 'transparent', fill: false, pointRadius: 0, borderWidth: 1.5 },
+        { label: 'Real bid', data: toXY(rDs,'bid1'), borderColor: BLUE+'0.2)', backgroundColor: BLUE+'0.07)', fill: false, pointRadius: 0, borderWidth: 1 },
+        { label: 'Dev ask',  data: toXY(dDs,'ask1'), borderColor: AMBER+'0.2)', backgroundColor: AMBER+'0.05)', fill: '+1', pointRadius: 0, borderWidth: 1, borderDash:[3,2] },
+        { label: 'Dev mid',  data: toXY(dDs,'mid'),  borderColor: AMBER+'0.9)', backgroundColor: 'transparent', fill: false, pointRadius: 0, borderWidth: 1.5, borderDash:[4,3] },
+        { label: 'Dev bid',  data: toXY(dDs,'bid1'), borderColor: AMBER+'0.2)', fill: false, pointRadius: 0, borderWidth: 1, borderDash:[3,2] },
+      ]
+    },
+    options: deepMerge(baseOpts, { scales: linearXOpts })
+  });
+}
+
+function renderSpreadDist() {
+  const sym = curProd.book === 'ACO' ? 'ASH_COATED_OSMIUM' : 'INTARIAN_PEPPER_ROOT';
+  const rSpreads = getRows(realData, sym).filter(r=>r.bid1&&r.ask1).map(r=>r.ask1-r.bid1);
+  const dSpreads = getRows(devData, sym).filter(r=>r.bid1&&r.ask1).map(r=>r.ask1-r.bid1);
+
+  const minS = Math.min.apply(null, [...rSpreads, ...dSpreads]);
+  const maxS = Math.max.apply(null, [...rSpreads, ...dSpreads]);
+  const bins = Array.from({length: maxS-minS+1}, (_,i) => minS+i);
+
+  const cnt1 = bins.map(b => rSpreads.filter(s=>Math.round(s)===b).length);
+  const cnt2 = bins.map(b => dSpreads.filter(s=>Math.round(s)===b).length);
+  const t1 = cnt1.reduce((a,b)=>a+b,0), t2 = cnt2.reduce((a,b)=>a+b,0);
+
+  mkChart('spreadDistChart', {
+    type: 'bar',
+    data: {
+      labels: bins.map(String),
+      datasets: [
+        { label: 'Real', data: cnt1.map(c=>(100*c/t1).toFixed(1)), backgroundColor: BLUE+'0.6)', borderColor: BLUE+'0.9)', borderWidth: 1 },
+        { label: 'Dev', data: cnt2.map(c=>(100*c/t2).toFixed(1)), backgroundColor: AMBER+'0.5)', borderColor: AMBER+'0.8)', borderWidth: 1 },
+      ]
+    },
+    options: deepMerge(baseOpts, { plugins: { legend: { display: true, labels:{color:'#8888a0',font:{size:11}} } }, scales: { y: { title: { display:true, text:'% of ticks', color:'#555568', font:{size:11} } } } })
+  });
+
+  document.getElementById('spreadStatsTable').innerHTML =
+    '<table class="mini-table">' +
+    '<thead><tr><th>Metric</th><th>Real</th><th>Dev</th></tr></thead>' +
+    '<tbody>' +
+    '<tr><td>Mean spread</td><td class="hi">' + avg(rSpreads).toFixed(2) + '</td><td class="hi">' + avg(dSpreads).toFixed(2) + '</td></tr>' +
+    '<tr><td>Median spread</td><td class="hi">' + med(rSpreads) + '</td><td class="hi">' + med(dSpreads) + '</td></tr>' +
+    '<tr><td>Min spread</td><td class="hi">' + Math.min.apply(null,rSpreads) + '</td><td class="hi">' + Math.min.apply(null,dSpreads) + '</td></tr>' +
+    '<tr><td>Max spread</td><td class="hi">' + Math.max.apply(null,rSpreads) + '</td><td class="hi">' + Math.max.apply(null,dSpreads) + '</td></tr>' +
+    '<tr><td>One-sided ticks</td><td class="hi">' + getRows(realData,sym).filter(r=>!r.bid1||!r.ask1).length + '</td><td class="hi">' + getRows(devData,sym).filter(r=>!r.bid1||!r.ask1).length + '</td></tr>' +
+    '</tbody></table>';
+}
+
+function renderTrades() {
+  const sym = curProd.trades === 'ACO' ? 'ASH_COATED_OSMIUM' : 'INTARIAN_PEPPER_ROOT';
+
+  function tradeSeries(data) {
+    const t = getTrades(data, sym);
+    const buys = t.filter(x=>x.buyer==='SUBMISSION').sort((a,b)=>a.timestamp-b.timestamp);
+    const sells = t.filter(x=>x.seller==='SUBMISSION').sort((a,b)=>a.timestamp-b.timestamp);
+    return { buys, sells };
+  }
+
+  const r = tradeSeries(realData);
+  const d = tradeSeries(devData);
+
+  const tradeLinearX = {
+    x: { type:'linear', min:0, max:100, ticks:{callback:v=>v+'%',maxTicksLimit:11,color:'#555568',font:{size:10,family:"'IBM Plex Mono'"}}, grid:{color:'rgba(42,42,56,0.8)'}, border:{color:'var(--border)'} },
+    y: { ticks:{color:'#555568',font:{size:10,family:"'IBM Plex Mono'"}}, grid:{color:'rgba(42,42,56,0.8)'}, border:{color:'var(--border)'} }
+  };
+
+  function makeScatterDs(trades, data, color, label) {
+    return {
+      label, type: 'scatter',
+      data: trades.map(t => ({ x: +(t.timestamp/data.maxTs*100).toFixed(2), y: t.price })),
+      backgroundColor: color+'0.65)', borderColor: color+'0.9)',
+      pointRadius: 3, pointHoverRadius: 5
+    };
+  }
+
+  const rRows = getRows(realData, sym).filter(r=>r.mid);
+  const dsR = dsample(rRows.map(r=>r.ts/realData.maxTs), rRows.map(r=>r.mid), 200);
+
+  mkChart('tradePriceReal', {
+    type: 'line',
+    data: {
+      datasets: [
+        { label: 'Mid', data: dsR.xs.map((x,i)=>({x:+(x*100).toFixed(2),y:dsR.ys[i]})), borderColor: '#333345', backgroundColor:'transparent', pointRadius:0, borderWidth:1 },
+        makeScatterDs(r.buys, realData, GREEN, 'Buys'),
+        makeScatterDs(r.sells, realData, RED, 'Sells'),
+      ]
+    },
+    options: deepMerge(baseOpts, { plugins:{legend:{display:false}}, scales: tradeLinearX })
+  });
+
+  const dRows = getRows(devData, sym).filter(r=>r.mid);
+  const dsD = dsample(dRows.map(r=>r.ts/devData.maxTs), dRows.map(r=>r.mid), 200);
+
+  mkChart('tradePriceDev', {
+    type: 'line',
+    data: {
+      datasets: [
+        { label: 'Mid', data: dsD.xs.map((x,i)=>({x:+(x*100).toFixed(2),y:dsD.ys[i]})), borderColor:'#333330', backgroundColor:'transparent', pointRadius:0, borderWidth:1 },
+        makeScatterDs(d.buys, devData, GREEN, 'Buys'),
+        makeScatterDs(d.sells, devData, RED, 'Sells'),
+      ]
+    },
+    options: deepMerge(baseOpts, { plugins:{legend:{display:false}}, scales: tradeLinearX })
+  });
+
+  const allPrices = [...r.buys.map(t=>t.price), ...r.sells.map(t=>t.price), ...d.buys.map(t=>t.price), ...d.sells.map(t=>t.price)];
+  if (allPrices.length) {
+    const pmin = Math.min.apply(null,allPrices)-1, pmax = Math.max.apply(null,allPrices)+1;
+    const bins = Array.from({length:pmax-pmin+1},(_,i)=>pmin+i);
+    const cnt = (arr, p) => arr.filter(x=>Math.round(x)===p).length;
+    mkChart('tradePriceDist', {
+      type: 'bar',
+      data: {
+        labels: bins.map(String),
+        datasets: [
+          { label:'Buys (real)', data:bins.map(p=>cnt(r.buys.map(t=>t.price),p)), backgroundColor:GREEN+'0.5)', borderColor:GREEN+'0.8)', borderWidth:1 },
+          { label:'Sells (real)', data:bins.map(p=>cnt(r.sells.map(t=>t.price),p)), backgroundColor:RED+'0.5)', borderColor:RED+'0.8)', borderWidth:1 },
+          { label:'Buys (dev)', data:bins.map(p=>cnt(d.buys.map(t=>t.price),p)), backgroundColor:GREEN+'0.2)', borderColor:GREEN+'0.5)', borderWidth:1 },
+          { label:'Sells (dev)', data:bins.map(p=>cnt(d.sells.map(t=>t.price),p)), backgroundColor:RED+'0.2)', borderColor:RED+'0.5)', borderWidth:1 },
+        ]
+      },
+      options: deepMerge(baseOpts, { plugins:{ legend:{ display:true, labels:{color:'#8888a0',font:{size:11}} } } })
+    });
+  }
+
+  function statsTable(buys, sells) {
+    const bPrices = buys.map(t=>t.price), sPrices = sells.map(t=>t.price);
+    const bQty = buys.reduce((a,t)=>a+t.quantity,0);
+    const sQty = sells.reduce((a,t)=>a+t.quantity,0);
+    const avgB = avg(bPrices), avgS = avg(sPrices);
+    const spreadCap = avgS - avgB;
+    return '<table class="mini-table">' +
+      '<thead><tr><th>Metric</th><th>Value</th></tr></thead>' +
+      '<tbody>' +
+      '<tr><td>Buy trades</td><td class="hi">' + buys.length + '</td></tr>' +
+      '<tr><td>Sell trades</td><td class="hi">' + sells.length + '</td></tr>' +
+      '<tr><td>Total bought (units)</td><td class="hi">' + bQty + '</td></tr>' +
+      '<tr><td>Total sold (units)</td><td class="hi">' + sQty + '</td></tr>' +
+      '<tr><td>Net position</td><td class="' + (bQty-sQty>=0?'pos':'neg') + '">' + (bQty-sQty>0?'+':'') + (bQty-sQty) + '</td></tr>' +
+      '<tr><td>Avg buy price</td><td class="hi">' + avgB.toFixed(2) + '</td></tr>' +
+      '<tr><td>Avg sell price</td><td class="hi">' + avgS.toFixed(2) + '</td></tr>' +
+      '<tr><td>Avg spread captured</td><td class="' + (spreadCap>0?'pos':'neg') + '">' + spreadCap.toFixed(2) + '</td></tr>' +
+      '</tbody></table>';
+  }
+
+  document.getElementById('tradeStatsReal').innerHTML = statsTable(r.buys, r.sells);
+  document.getElementById('tradeStatsDev').innerHTML = statsTable(d.buys, d.sells);
+}
+
+function renderPos() {
+  const sym = curProd.pos === 'ACO' ? 'ASH_COATED_OSMIUM' : 'INTARIAN_PEPPER_ROOT';
+
+  function buildPos(data) {
+    const trades = getTrades(data, sym).sort((a,b)=>a.timestamp-b.timestamp);
+    let pos = 0;
+    const pts = [{ x: 0, y: 0 }];
+    for (const t of trades) {
+      if (t.buyer === 'SUBMISSION') pos += t.quantity;
+      else pos -= t.quantity;
+      pts.push({ x: +(t.timestamp/data.maxTs*100).toFixed(2), y: pos });
+    }
+    pts.push({ x: 100, y: pos });
+    return pts;
+  }
+
+  const rPos = buildPos(realData);
+  const dPos = buildPos(devData);
+
+  const posLinearX = {
+    x: { type:'linear', min:0, max:100, ticks:{callback:v=>v+'%',maxTicksLimit:11,color:'#555568',font:{size:10,family:"'IBM Plex Mono'"}}, grid:{color:'rgba(42,42,56,0.8)'}, border:{color:'var(--border)'} },
+    y: { ticks:{color:'#555568',font:{size:10,family:"'IBM Plex Mono'"}}, grid:{color:'rgba(42,42,56,0.8)'}, border:{color:'var(--border)'} }
+  };
+
+  mkChart('posChart', {
+    type: 'line',
+    data: {
+      datasets: [
+        { label: 'Limit +80', data: [{x:0,y:80},{x:100,y:80}], borderColor:RED+'0.4)', borderDash:[4,4], pointRadius:0, borderWidth:1, fill:false },
+        { label: 'Limit -80', data: [{x:0,y:-80},{x:100,y:-80}], borderColor:RED+'0.4)', borderDash:[4,4], pointRadius:0, borderWidth:1, fill:false },
+        { label: 'Real position', data: rPos, borderColor:BLUE+'0.9)', backgroundColor:BLUE+'0.08)', fill:true, pointRadius:0, borderWidth:2, stepped:'before' },
+        { label: 'Dev position', data: dPos, borderColor:AMBER+'0.9)', backgroundColor:AMBER+'0.06)', fill:true, pointRadius:0, borderWidth:2, stepped:'before', borderDash:[5,3] },
+      ]
+    },
+    options: deepMerge(baseOpts, { plugins:{ legend:{ display:true, labels:{color:'#8888a0',font:{size:11}} } }, scales: posLinearX })
+  });
+
+  function posHist(pts) {
+    const hist = {};
+    for (let i = 0; i < pts.length-1; i++) {
+      const p = pts[i].y;
+      hist[p] = (hist[p]||0) + 1;
+    }
+    return hist;
+  }
+
+  const rH = posHist(rPos), dH = posHist(dPos);
+  const allPos = [...new Set([...Object.keys(rH), ...Object.keys(dH)].map(Number))].sort((a,b)=>a-b);
+  const rTotal = Object.values(rH).reduce((a,b)=>a+b,0);
+  const dTotal = Object.values(dH).reduce((a,b)=>a+b,0);
+
+  mkChart('posHistChart', {
+    type: 'bar',
+    data: {
+      labels: allPos.map(String),
+      datasets: [
+        { label:'Real', data:allPos.map(p=>(((rH[p]||0)/rTotal)*100).toFixed(1)), backgroundColor:BLUE+'0.6)', borderColor:BLUE+'0.9)', borderWidth:1 },
+        { label:'Dev', data:allPos.map(p=>(((dH[p]||0)/dTotal)*100).toFixed(1)), backgroundColor:AMBER+'0.5)', borderColor:AMBER+'0.8)', borderWidth:1 },
+      ]
+    },
+    options: deepMerge(baseOpts, { plugins:{ legend:{ display:true, labels:{color:'#8888a0',font:{size:11}} } }, scales:{ y:{ title:{ display:true, text:'% of time', color:'#555568', font:{size:11} } } } })
+  });
+}
+
+function renderFindings() {
+  const findings = [];
+
+  const rSubACO = getTrades(realData, 'ASH_COATED_OSMIUM');
+  const rTotalACO = realData.trades.filter(t=>t.symbol==='ASH_COATED_OSMIUM');
+  const volShare = rTotalACO.length ? rSubACO.length/rTotalACO.length : 0;
+  if (volShare < 0.8) {
+    findings.push({ sev: 'bad', title: 'ACO volume share: ' + (volShare*100).toFixed(1) + '% - leaving trades on table', body: 'You participated in ' + rSubACO.length + ' of ' + rTotalACO.length + ' total ACO trades. The missing ' + (100-Math.round(volShare*100)) + '% was traded between other bots. Narrowing ACO_DEFAULT_EDGE from 4 to 2-3 would likely capture more fills at similar spread.' });
+  }
+
+  const iprBuys = getTrades(realData, 'INTARIAN_PEPPER_ROOT').filter(t=>t.buyer==='SUBMISSION').sort((a,b)=>a.timestamp-b.timestamp);
+  if (iprBuys.length) {
+    const firstBuyTs = iprBuys[0].timestamp;
+    const firstBuyPct = (firstBuyTs / realData.maxTs * 100).toFixed(1);
+    const iprRows = getRows(realData, 'INTARIAN_PEPPER_ROOT').filter(r=>r.mid);
+    const midAtStart = iprRows[0] ? iprRows[0].mid : 0;
+    const firstBuyRow = iprRows.find(r=>r.ts>=firstBuyTs);
+    const midAtFirstBuy = firstBuyRow ? firstBuyRow.mid : 0;
+    const delay_cost = Math.round((midAtFirstBuy - midAtStart) * 80);
+    if (firstBuyTs > 5000) {
+      const iprSpreads = getRows(realData,'INTARIAN_PEPPER_ROOT').filter(r=>r.bid1&&r.ask1).map(r=>r.ask1-r.bid1);
+      findings.push({ sev: 'warn', title: 'IPR first buy delayed until ' + firstBuyPct + '% of run (ts=' + firstBuyTs.toLocaleString() + ')', body: 'IPR mid moved from ' + midAtStart.toFixed(0) + ' to ' + midAtFirstBuy.toFixed(0) + ' before first buy. At 80 units, delay cost ~' + delay_cost.toLocaleString() + ' PnL. Cause: IPR_BUY_SLACK=2 too tight for a median spread of ' + med(iprSpreads) + ' ticks.' });
+    }
+  }
+
+  const rSpreads = getRows(realData,'ASH_COATED_OSMIUM').filter(r=>r.bid1&&r.ask1).map(r=>r.ask1-r.bid1);
+  const dSpreads = getRows(devData,'ASH_COATED_OSMIUM').filter(r=>r.bid1&&r.ask1).map(r=>r.ask1-r.bid1);
+  const rMedSpread = med(rSpreads), dMedSpread = med(dSpreads);
+  const spreadDiff = Math.abs(rMedSpread - dMedSpread);
+  if (spreadDiff <= 2) {
+    findings.push({ sev: 'ok', title: 'ACO market structure identical in both runs (spread: ' + rMedSpread + ' real vs ' + dMedSpread + ' dev)', body: 'The ACO book spread distribution is nearly identical. The real run was not harder, just longer. Parameter changes tested on dev should transfer to real.' });
+  } else {
+    findings.push({ sev: 'warn', title: 'ACO spread differs: ' + rMedSpread + ' real vs ' + dMedSpread + ' dev', body: 'Market microstructure changed between dev and real. Parameters tuned on dev (edges, slack) may not hold.' });
+  }
+
+  const lenRatio = realData.ticks / devData.ticks;
+  if (lenRatio > 5) {
+    findings.push({ sev: 'bad', title: 'Dev log is ' + lenRatio.toFixed(0) + 'x shorter than real run', body: 'Dev: ' + devData.ticks.toLocaleString() + ' ticks. Real: ' + realData.ticks.toLocaleString() + ' ticks. Short dev logs hide long-run behaviour like IPR entry timing, ACO fill rate accumulation, and position-holding efficiency. Always validate on full-length logs.' });
+  }
+
+  const rIPR = getRows(realData,'INTARIAN_PEPPER_ROOT').filter(r=>r.mid);
+  const dIPR = getRows(devData,'INTARIAN_PEPPER_ROOT').filter(r=>r.mid);
+  const rRate = rIPR.length > 1 ? (rIPR[rIPR.length-1].mid - rIPR[0].mid) / realData.ticks : 0;
+  const dRate = dIPR.length > 1 ? (dIPR[dIPR.length-1].mid - dIPR[0].mid) / devData.ticks : 0;
+  findings.push({ sev: Math.abs(rRate-dRate)<0.05?'ok':'warn', title: 'IPR drift rate - real: ' + rRate.toFixed(3) + ' pts/tick, dev: ' + dRate.toFixed(3) + ' pts/tick', body: 'Total IPR moves: real ' + (rIPR[rIPR.length-1].mid-rIPR[0].mid).toFixed(0) + ' pts, dev ' + (dIPR[dIPR.length-1].mid-dIPR[0].mid).toFixed(0) + ' pts. ' + (Math.abs(rRate-dRate)<0.05?'Rates match - dev correctly approximated the trend.':'Rates differ - dev may have had a different regime.') });
+
+  const rAcoBuys = getTrades(realData,'ASH_COATED_OSMIUM').filter(t=>t.buyer==='SUBMISSION');
+  const rAcoSells = getTrades(realData,'ASH_COATED_OSMIUM').filter(t=>t.seller==='SUBMISSION');
+  if (rAcoBuys.length && rAcoSells.length) {
+    const aB = avg(rAcoBuys.map(t=>t.price)), aS = avg(rAcoSells.map(t=>t.price));
+    findings.push({ sev: aS-aB > 5 ? 'ok' : 'warn', title: 'ACO avg spread captured: ' + (aS-aB).toFixed(2) + ' pts per unit', body: 'Bought avg ' + aB.toFixed(2) + ', sold avg ' + aS.toFixed(2) + '. Median book spread was ' + rMedSpread + ' ticks. We captured ' + ((aS-aB)/rMedSpread*100).toFixed(0) + '% of the available book spread.' });
+  }
+
+  const iprPos = buildIPRPos();
+  const timeAt80 = iprPos.filter(p => Math.abs(p) >= 78).length / iprPos.length;
+  findings.push({ sev: timeAt80 > 0.85 ? 'ok' : 'warn', title: 'IPR at position limit ' + (timeAt80*100).toFixed(0) + '% of run', body: 'Holding max position during a sustained uptrend is optimal. ' + (timeAt80>0.85?'You did well here - position limit was saturated for most of the run.':'Position was below limit for significant portions of the run, meaning trend capture was suboptimal.') });
+
+  const container = document.getElementById('findingsContainer');
+  container.innerHTML = findings.map(f =>
+    '<div class="finding ' + (f.sev==='bad'?'':f.sev==='ok'?'ok':'warn') + '">' +
+      '<div class="finding-title">' + (f.sev==='bad'?'X':f.sev==='ok'?'OK':'!') + ' ' + f.title + '</div>' +
+      '<div class="finding-body">' + f.body + '</div>' +
+    '</div>'
+  ).join('');
+}
+
+function buildIPRPos() {
+  const trades = getTrades(realData, 'INTARIAN_PEPPER_ROOT').sort((a,b)=>a.timestamp-b.timestamp);
+  let pos = 0;
+  const positions = [];
+  for (const t of trades) {
+    if (t.buyer==='SUBMISSION') pos += t.quantity;
+    else pos -= t.quantity;
+    positions.push(pos);
+  }
+  return positions;
+}
+
+setupFileInput('devFile', 'devCard', 'devStatus', 'dev');
+setupFileInput('realFile', 'realCard', 'realStatus', 'real');
+document.getElementById('analyzeBtn').addEventListener('click', analyze);
+</script>
+</body>
+</html>

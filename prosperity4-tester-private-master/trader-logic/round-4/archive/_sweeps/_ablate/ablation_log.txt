@@ -1,0 +1,12 @@
+Running baseline r4_final.py ...
+BASELINE: 1k_d3=60662 | 10k_def=261854 | 10k_imc=248023
+ABL hp_s17_giga                    | 1k 64118 (+3456) | def 167580 (-94274) | imc 147778 (-100245)
+ABL hp_s17_zgate                   | 1k 60728 (+66) | def 253218 (-8636) | imc 240595 (-7428)
+ABL hp_vfe_crash_gate              | 1k 51783 (-8879) | def 248523 (-13331) | imc 237450 (-10573)
+ABL hp_s17_circuit_breaker         | 1k 60662 (+0) | def 261854 (+0) | imc 248023 (+0)
+ABL hp_zscore_mr                   | 1k 64942 (+4280) | def 178085 (-83769) | imc 166055 (-81968)
+ABL hp_edge_beta_mm                | 1k 60665 (+3) | def 261884 (+30) | imc 248031 (+8)
+ABL vfe_wallmid_mm                 | 1k 60728 (+66) | def 243974 (-17880) | imc 227042 (-20981)
+ABL vfe_layer_e_spread             | 1k 60662 (+0) | def 261096 (-758) | imc 248204 (+181)
+ABL vfe_momentum_short             | 1k 60491 (-171) | def 261136 (-718) | imc None (?)
+ABL vfe_mark49_fade                | 1k 60662 (+0) | def 46270 (-215584) | imc None (?)

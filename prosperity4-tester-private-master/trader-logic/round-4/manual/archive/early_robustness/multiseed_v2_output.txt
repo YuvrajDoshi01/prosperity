@@ -1,0 +1,115 @@
+Multi-seed reproducibility (R4 manual)
+  Seeds:           20 (1..20)
+  Paths per seed:  50,000,000
+  Total paths:     1,000,000,000
+  Trials per seed: 500,000
+  Strategies:      ['OPTIMAL_7POS', 'DROP_60C', 'USER_SAFE']
+
+    [seed 1] chunk 1/10 done t=3.5s
+    [seed 1] chunk 10/10 done t=57.4s
+  Seed  1 done in 57.6s  | total 1.0m | ETA 18.2m
+    [seed 2] chunk 1/10 done t=5.7s
+    [seed 2] chunk 10/10 done t=37.8s
+  Seed  2 done in 37.9s  | total 1.6m | ETA 14.3m
+  Seed  3 done in 32.3s  | total 2.1m | ETA 12.1m
+  Seed  4 done in 32.3s  | total 2.7m | ETA 10.7m
+  Seed  5 done in 35.2s  | total 3.3m | ETA 9.8m
+  Seed  6 done in 37.2s  | total 3.9m | ETA 9.0m
+  Seed  7 done in 32.2s  | total 4.4m | ETA 8.2m
+  Seed  8 done in 32.0s  | total 4.9m | ETA 7.4m
+  Seed  9 done in 32.4s  | total 5.5m | ETA 6.7m
+  Seed 10 done in 33.1s  | total 6.0m | ETA 6.0m
+  Seed 11 done in 32.7s  | total 6.6m | ETA 5.4m
+  Seed 12 done in 32.1s  | total 7.1m | ETA 4.7m
+  Seed 13 done in 36.6s  | total 7.7m | ETA 4.2m
+  Seed 14 done in 33.9s  | total 8.3m | ETA 3.6m
+  Seed 15 done in 46.5s  | total 9.1m | ETA 3.0m
+  Seed 16 done in 54.1s  | total 10.0m | ETA 2.5m
+  Seed 17 done in 44.3s  | total 10.7m | ETA 1.9m
+  Seed 18 done in 34.1s  | total 11.3m | ETA 1.3m
+  Seed 19 done in 39.1s  | total 11.9m | ETA 0.6m
+    [seed 20] chunk 1/10 done t=5.4s
+    [seed 20] chunk 10/10 done t=40.0s
+  Seed 20 done in 40.1s  | total 12.6m | ETA 0.0m
+
+====================================================================================================
+CROSS-SEED AGGREGATE
+====================================================================================================
+
+[OPTIMAL_7POS]
+  E[score]:    $    +157,737  SE $       +77  CI95 [$    +157,575, $    +157,899]
+  SD/trial:    $    +263,660  range [$263,215, $264,197]
+  CVaR-5%:     $    -359,913  SE $      +170  CI95 [$    -360,269, $    -359,557]
+  Sharpe:      +0.5983  CI95 [+0.5976, +0.5989]
+  P(score<-$1M): mean=0.0001%  range [0.0000%, 0.0002%]  SE=0.0000%
+
+[DROP_60C]
+  E[score]:    $    +162,843  SE $       +82  CI95 [$    +162,672, $    +163,015]
+  SD/trial:    $    +344,270  range [$343,704, $344,685]
+  CVaR-5%:     $    -552,546  SE $      +213  CI95 [$    -552,991, $    -552,101]
+  Sharpe:      +0.4730  CI95 [+0.4725, +0.4735]
+  P(score<-$1M): mean=0.0546%  range [0.0476%, 0.0608%]  SE=0.0007%
+
+[USER_SAFE]
+  E[score]:    $     +57,272  SE $       +16  CI95 [$     +57,239, $     +57,305]
+  SD/trial:    $     +59,028  range [$58,946, $59,103]
+  CVaR-5%:     $     -62,599  SE $       +42  CI95 [$     -62,686, $     -62,512]
+  Sharpe:      +0.9703  CI95 [+0.9695, +0.9710]
+  P(score<-$1M): mean=0.0000%  range [0.0000%, 0.0000%]  SE=0.0000%
+
+====================================================================================================
+RANKING STABILITY: OPTIMAL_7POS  vs  USER_SAFE  (per seed)
+====================================================================================================
+  seed  1: 7POS=$    +157,860  SAFE=$     +57,340  diff=$    +100,520  winner=OPTIMAL_7POS
+  seed  2: 7POS=$    +157,304  SAFE=$     +57,127  diff=$    +100,177  winner=OPTIMAL_7POS
+  seed  3: 7POS=$    +157,167  SAFE=$     +57,198  diff=$     +99,969  winner=OPTIMAL_7POS
+  seed  4: 7POS=$    +158,439  SAFE=$     +57,302  diff=$    +101,137  winner=OPTIMAL_7POS
+  seed  5: 7POS=$    +157,958  SAFE=$     +57,148  diff=$    +100,810  winner=OPTIMAL_7POS
+  seed  6: 7POS=$    +157,766  SAFE=$     +57,198  diff=$    +100,569  winner=OPTIMAL_7POS
+  seed  7: 7POS=$    +157,838  SAFE=$     +57,244  diff=$    +100,593  winner=OPTIMAL_7POS
+  seed  8: 7POS=$    +157,202  SAFE=$     +57,198  diff=$    +100,004  winner=OPTIMAL_7POS
+  seed  9: 7POS=$    +158,324  SAFE=$     +57,270  diff=$    +101,054  winner=OPTIMAL_7POS
+  seed 10: 7POS=$    +157,325  SAFE=$     +57,287  diff=$    +100,038  winner=OPTIMAL_7POS
+  seed 11: 7POS=$    +157,938  SAFE=$     +57,372  diff=$    +100,566  winner=OPTIMAL_7POS
+  seed 12: 7POS=$    +157,674  SAFE=$     +57,368  diff=$    +100,306  winner=OPTIMAL_7POS
+  seed 13: 7POS=$    +157,653  SAFE=$     +57,287  diff=$    +100,366  winner=OPTIMAL_7POS
+  seed 14: 7POS=$    +157,640  SAFE=$     +57,248  diff=$    +100,392  winner=OPTIMAL_7POS
+  seed 15: 7POS=$    +157,505  SAFE=$     +57,317  diff=$    +100,187  winner=OPTIMAL_7POS
+  seed 16: 7POS=$    +157,634  SAFE=$     +57,351  diff=$    +100,283  winner=OPTIMAL_7POS
+  seed 17: 7POS=$    +157,500  SAFE=$     +57,310  diff=$    +100,190  winner=OPTIMAL_7POS
+  seed 18: 7POS=$    +158,002  SAFE=$     +57,260  diff=$    +100,743  winner=OPTIMAL_7POS
+  seed 19: 7POS=$    +157,966  SAFE=$     +57,283  diff=$    +100,682  winner=OPTIMAL_7POS
+  seed 20: 7POS=$    +158,038  SAFE=$     +57,331  diff=$    +100,706  winner=OPTIMAL_7POS
+
+  OPTIMAL_7POS wins on 20/20 seeds
+  Mean diff: $+100,465  CI95 [$+100,309, $+100,620]
+
+RANKING STABILITY: DROP_60C  vs  OPTIMAL_7POS
+  DROP_60C beats OPTIMAL_7POS on 20/20 seeds
+  Mean diff: $+5,107  CI95 [$+5,004, $+5,209]
+
+====================================================================================================
+BOOTSTRAP CI on aggregate CVaR-5% (OPTIMAL_7POS)
+====================================================================================================
+  Bootstrap done in 15.1s
+  Aggregate pool size: 10,000,000
+  Bootstrap CVaR-5% : mean $-359,881  SD $+573
+                      CI95 [$-361,055, $-358,790]
+
+  DROP_60C bootstrap CVaR-5% : $-552,561  CI95 [$-554,313, $-550,717]
+  USER_SAFE bootstrap CVaR-5%: $-62,601  CI95 [$-62,872, $-62,332]
+
+====================================================================================================
+TAIL PROBABILITY STABILITY  P(score<-$1M)
+====================================================================================================
+  [OPTIMAL_7POS]  mean=0.0001%  range [0.0000%, 0.0002%]  SE=0.0000%
+  [DROP_60C]  mean=0.0546%  range [0.0476%, 0.0608%]  SE=0.0007%
+  [USER_SAFE]  mean=0.0000%  range [0.0000%, 0.0000%]  SE=0.0000%
+
+  Pooled (1B trials per strategy):
+    [OPTIMAL_7POS] P(<-$1M) = 0.0001%  +/- 0.0001% (95% CI)  | P(<-$500k) = 0.3867%
+    [DROP_60C] P(<-$1M) = 0.0546%  +/- 0.0014% (95% CI)  | P(<-$500k) = 2.7438%
+    [USER_SAFE] P(<-$1M) = 0.0000%  +/- 0.0000% (95% CI)  | P(<-$500k) = 0.0000%
+
+Saved results to trader-logic/round-4/manual/multiseed_v2_results.json
+Total runtime: 13.35 min

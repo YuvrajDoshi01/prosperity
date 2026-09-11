@@ -1,0 +1,103 @@
+================================================================================
+VOUCHER STRIKE ANALYSIS: VEV_5300 & VEV_5500
+Should we remove VEV_5500 from BS taking? Reduce VEV_5300 position cap?
+================================================================================
+Strategy: r3_combined_v22.py
+Data: Backtester 10k ticks x 3 days + Website submission 470616 (1k day2)
+Date: 2026-04-26
+
+================================================================================
+1. VEV_5500 (BS_EDGE=2, OTM passive bids, BS taking)
+================================================================================
+
+  Current config:
+    - BS taking with edge=2 (tightest of all strikes)
+    - OTM passive bids: size=20, cap=300, edge=1
+    - Position limit: 300
+
+  Backtester PnL (10k ticks/day):
+              Final      Min      Max    MaxDD  %Profit
+  -------------------------------------------------------
+  Day 0:       +100     -900     +500     1300      52%
+  Day 1:       +100     -600     +800     1300      59%
+  Day 2:       -200     -700     +700     1000      64%
+  -------------------------------------------------------
+  3-day:         +0
+
+  Website (1k day2): Final=$-97  Min=$-333  Max=$+243  MaxDD=$546
+
+  VERDICT: NOT consistently negative in training data — net $0 over 3 days.
+  But zero expected value with $1k+ drawdown = pure risk, no reward.
+  Website specifically loses $97.
+
+  RECOMMENDATION: REMOVE from BS taking (V_BS_STRIKES).
+  Keep OTM passive bids only. Expected: +$0-200, -$1k drawdown removed.
+
+================================================================================
+2. VEV_5300 (BS_EDGE=4, passive MM, OTM passive bids)
+================================================================================
+
+  Current config:
+    - BS taking with edge=4
+    - Generic passive MM (bid+1/ask-1, size=20)
+    - OTM passive bids: size=20, cap=200, edge=1
+    - Position limit: 300
+
+  Backtester PnL (10k ticks/day):
+              Final      Min      Max    MaxDD  %Profit
+  -------------------------------------------------------
+  Day 0:       +804    -1947    +2320     4267      83%
+  Day 1:       -254    -2156    +1975     3413      50%
+  Day 2:       +349    -1531    +2822     3387      82%
+  -------------------------------------------------------
+  3-day:       +899
+
+  Website (1k day2): Final=$+94  Min=$-1231  Max=$+1846  MaxDD=$2738
+
+  Risk/Reward analysis:
+    Average daily PnL:     $+300
+    Average daily MaxDD:   $3,689
+    Reward/Risk ratio:     0.08
+
+  VERDICT: NET POSITIVE but terrible risk/reward (0.08).
+  $3.7k avg drawdown for $300/day avg profit.
+
+  RECOMMENDATION: Reduce OTM_BID_PARAMS[5300]['cap'] from 200 to 100.
+  Halves drawdown (~$1.7k) while keeping ~half profit (~$150/day).
+
+================================================================================
+3. ALL VOUCHER STRIKES — PnL COMPARISON
+================================================================================
+
+  Strike        Day0     Day1     Day2    3-Day   Web1k
+  -------------------------------------------------------
+  VEV_4000       +3,039   +3,367   +2,437   +8,843     +134
+  VEV_4500           +0       +0       +0       +0       +0
+  VEV_5000           +0       +0       +0       +0       +0
+  VEV_5100         +996      -26       +0     +970       +0
+  VEV_5200         +984   -1,214     +709     +479      -28
+  VEV_5300         +804     -254     +349     +899     +123
+  VEV_5400          +53      +36   +1,553   +1,642     +221
+  VEV_5500         +100     +100     -200       +0     -100
+  VEV_6000         +150     +150     +150     +450      +18
+  VEV_6500         +150     +150     +150     +450      +18
+  -------------------------------------------------------
+  TOTAL                                    +13,733     +386
+
+================================================================================
+4. CONCLUSIONS
+================================================================================
+
+  VEV_5500 — remove from BS taking:
+    - NOT consistently negative in training (net $0)
+    - Consistently negative on website (-$97)
+    - Zero expected value + $1k drawdown = pure noise
+    -> Remove from V_BS_STRIKES. Keep in OTM passive bids.
+    -> Safe change with small upside on website.
+
+  VEV_5300 — reduce position cap:
+    - Net positive in training (+$899) and website (+$94)
+    - BUT $3.7k avg drawdown for $300/day = 0.08 reward/risk
+    -> Reduce OTM_BID_PARAMS[5300]['cap'] to 100 (from 200)
+    -> Halves risk, halves reward, much cleaner risk profile.
+

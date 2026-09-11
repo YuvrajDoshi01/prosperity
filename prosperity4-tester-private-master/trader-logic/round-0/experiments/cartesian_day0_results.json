@@ -1,0 +1,446 @@
+{
+  "top20": [
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 2,
+        "pos_thresh": 40,
+        "wide_off": 5,
+        "sig_decay": 0.9
+      },
+      "tomatoes": 1856.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 2,
+        "pos_thresh": 50,
+        "wide_off": 5,
+        "sig_decay": 0.9
+      },
+      "tomatoes": 1856.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 2,
+        "pos_thresh": 80,
+        "wide_off": 5,
+        "sig_decay": 0.9
+      },
+      "tomatoes": 1856.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 2,
+        "pos_thresh": 60,
+        "wide_off": 5,
+        "sig_decay": 0.9
+      },
+      "tomatoes": 1856.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 3,
+        "pos_thresh": 40,
+        "wide_off": 5,
+        "sig_decay": 0.9
+      },
+      "tomatoes": 1856.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 3,
+        "pos_thresh": 50,
+        "wide_off": 5,
+        "sig_decay": 0.9
+      },
+      "tomatoes": 1856.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 3,
+        "pos_thresh": 60,
+        "wide_off": 5,
+        "sig_decay": 0.9
+      },
+      "tomatoes": 1856.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 3,
+        "pos_thresh": 80,
+        "wide_off": 5,
+        "sig_decay": 0.9
+      },
+      "tomatoes": 1856.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 3,
+        "pos_thresh": 40,
+        "wide_off": 5,
+        "sig_decay": 0.7
+      },
+      "tomatoes": 1846.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 3,
+        "pos_thresh": 50,
+        "wide_off": 5,
+        "sig_decay": 0.7
+      },
+      "tomatoes": 1846.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 3,
+        "pos_thresh": 60,
+        "wide_off": 5,
+        "sig_decay": 0.7
+      },
+      "tomatoes": 1846.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 3,
+        "pos_thresh": 80,
+        "wide_off": 5,
+        "sig_decay": 0.7
+      },
+      "tomatoes": 1846.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 2,
+        "pos_thresh": 40,
+        "wide_off": 5,
+        "sig_decay": 0.7
+      },
+      "tomatoes": 1841.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 2,
+        "pos_thresh": 50,
+        "wide_off": 5,
+        "sig_decay": 0.7
+      },
+      "tomatoes": 1841.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 2,
+        "pos_thresh": 80,
+        "wide_off": 5,
+        "sig_decay": 0.7
+      },
+      "tomatoes": 1841.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 2.75,
+        "tf_coef": 3.0,
+        "tf_window": 10,
+        "tf_norm": 10,
+        "post_offset": 2,
+        "pos_thresh": 60,
+        "wide_off": 5,
+        "sig_decay": 0.7
+      },
+      "tomatoes": 1841.0,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 3.25,
+        "tf_coef": 2.5,
+        "tf_window": 15,
+        "tf_norm": 10,
+        "post_offset": 1,
+        "pos_thresh": 50,
+        "wide_off": 5,
+        "sig_decay": 1.0
+      },
+      "tomatoes": 1837.5,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 3.25,
+        "tf_coef": 2.5,
+        "tf_window": 15,
+        "tf_norm": 10,
+        "post_offset": 2,
+        "pos_thresh": 50,
+        "wide_off": 5,
+        "sig_decay": 1.0
+      },
+      "tomatoes": 1837.5,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 3.25,
+        "tf_coef": 2.5,
+        "tf_window": 15,
+        "tf_norm": 10,
+        "post_offset": 3,
+        "pos_thresh": 50,
+        "wide_off": 5,
+        "sig_decay": 1.0
+      },
+      "tomatoes": 1837.5,
+      "emeralds": 1029.0
+    },
+    {
+      "params": {
+        "coefs": [
+          0.059694,
+          0.11727,
+          0.244154,
+          0.57844
+        ],
+        "move_trig": 4,
+        "sig_thresh": 0.5,
+        "intercept": 3.25,
+        "tf_coef": 2.5,
+        "tf_window": 5,
+        "tf_norm": 10,
+        "post_offset": 1,
+        "pos_thresh": 80,
+        "wide_off": 5,
+        "sig_decay": 1.0
+      },
+      "tomatoes": 1834.5,
+      "emeralds": 1029.0
+    }
+  ],
+  "total_combos": 54432,
+  "elapsed_s": 359.17643904685974
+}

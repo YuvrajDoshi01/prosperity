@@ -1,0 +1,15 @@
+Python: 3.12.12
+certifi: 2023.11.17
+charset_normalizer: 3.3.2
+idna: 3.6
+jsonpickle: 3.0.2
+numpy: 1.26.2
+pandas: 2.1.4
+python_dateutil: 2.8.2
+pytz: 2023.3.post1
+six: 1.16.0
+urllib3: 1.26.17
+requests: unknown (present)
+sortedcontainers: unknown (present)
+awslambdaric: unknown (present)
+OS: Amazon Linux 2023 (Red Hat based)

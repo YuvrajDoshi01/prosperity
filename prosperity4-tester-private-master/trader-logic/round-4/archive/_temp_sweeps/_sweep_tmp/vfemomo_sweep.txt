@@ -1,0 +1,12 @@
+v5_vfemomo_t2_s100 | 1k_d3=Total profit: 5,384 | def=Total profit: 133,368 | imc=Total profit: 124,396
+v5_vfemomo_t2_s150 | 1k_d3=Total profit: 5,384 | def=Total profit: 133,368 | imc=Total profit: 124,396
+v5_vfemomo_t2_s200 | 1k_d3=Total profit: 5,384 | def=Total profit: 133,368 | imc=Total profit: 124,396
+v5_vfemomo_t3_s100 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_vfemomo_t3_s150 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_vfemomo_t3_s200 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_vfemomo_t4_s100 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,564 | imc=Total profit: 124,304
+v5_vfemomo_t4_s150 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,564 | imc=Total profit: 124,304
+v5_vfemomo_t4_s200 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,564 | imc=Total profit: 124,304
+v5_vfemomo_t5_s100 | 1k_d3=Total profit: 5,817 | def=Total profit: 133,850 | imc=Total profit: 123,972
+v5_vfemomo_t5_s150 | 1k_d3=Total profit: 5,817 | def=Total profit: 133,850 | imc=Total profit: 123,972
+v5_vfemomo_t5_s200 | 1k_d3=Total profit: 5,817 | def=Total profit: 133,850 | imc=Total profit: 123,972

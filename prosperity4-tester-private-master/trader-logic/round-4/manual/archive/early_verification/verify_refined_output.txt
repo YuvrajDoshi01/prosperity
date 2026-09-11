@@ -1,0 +1,56 @@
+Position limits OK.
+  chunk 5/40 (32s)
+  chunk 10/40 (65s)
+  chunk 15/40 (97s)
+  chunk 20/40 (129s)
+  chunk 25/40 (160s)
+  chunk 30/40 (190s)
+  chunk 35/40 (225s)
+  chunk 40/40 (264s)
+
+2M trials × 100 paths each = 200,000,000 total paths
+Generated in 264s
+
+====================================================================================================
+RESULTS — fresh seed, 2M trials per strategy
+====================================================================================================
+
+OPTIMAL_7POS:
+  Mean      = $     +158,086
+  Median    = $     +150,067
+  SD        = $     +263,724
+  Sharpe    =       +0.5994
+  P>0       =         72.00%
+  q5        = $     -261,678
+  CVaR-5%   = $     -359,691
+  q2        = $     -358,181
+  CVaR-2%   = $     -443,120
+  CVaR-1%   = $     -499,360
+
+REFINED_9POS:
+  Mean      = $     +157,953
+  Median    = $     +149,133
+  SD        = $     +256,928
+  Sharpe    =       +0.6148
+  P>0       =         72.42%
+  q5        = $     -249,527
+  CVaR-5%   = $     -342,805
+  q2        = $     -341,520
+  CVaR-2%   = $     -422,148
+  CVaR-1%   = $     -475,494
+
+====================================================================================================
+PAIRED DIFFERENCE: REFINED_9POS - OPTIMAL_7POS (same paths)
+====================================================================================================
+  Mean diff   = $      -133.23
+  SD diff     = $   +36,996.80
+  SE on diff  = $       +26.16  (2M-trial estimate)
+  P(REFINED beats OPT) = 48.63%
+  Sigma of diff in units of SE: -5.09
+
+CVaR-5% comparison (independent percentile per strategy):
+  OPTIMAL_7POS CVaR-5% = $     -359,691
+  REFINED_9POS CVaR-5% = $     -342,805
+  REFINED improvement  = $      +16,886
+
+Done in 265s

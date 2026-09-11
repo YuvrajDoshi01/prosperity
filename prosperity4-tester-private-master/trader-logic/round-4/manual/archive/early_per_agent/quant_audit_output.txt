@@ -1,0 +1,244 @@
+================================================================================
+R4 MANUAL CHALLENGE -- QUANT AUDIT
+================================================================================
+S0=50.0, sigma=2.51, r=0.0, T_3w=0.059524, T_2w=0.039683
+sigma*sqrt(T_3w) = 0.6124
+sigma*sqrt(T_2w) = 0.5000
+DT = 0.0009921, N_3W steps = 60, N_2W steps = 40
+
+================================================================================
+1. TIME CONVENTION VERIFICATION (IV inversion)
+================================================================================
+Try multiple T conventions, see which inverts to the stated sigma=2.51.
+  T = 21 calendar / 365              (0.05753) -> IV(50C@12.025) = 2.5526
+  T = 21 calendar / 252              (0.08333) -> IV(50C@12.025) = 2.1210
+  T = 15 trading / 252               (0.05952) -> IV(50C@12.025) = 2.5096
+  T = 21 trading / 252               (0.08333) -> IV(50C@12.025) = 2.1210
+  T = 3 weeks / 52                   (0.05769) -> IV(50C@12.025) = 2.5491
+  [OK] Only 15/252 (3w trading days) recovers the stated sigma=2.51.
+
+================================================================================
+2. FAIR VALUES (BS closed-form vs MC @ 10M paths)
+================================================================================
+Generating 10,000,000 GBM paths for 3w (60 steps)...
+  Generated in 20.8s
+Generating 10,000,000 GBM paths for 2w (40 steps)...
+  Generated in 9.5s
+
+  Instrument                        BS   MC (10M)       SE       Diff      Z
+  ---------------------------------------------------------------------------
+  3w_C K=35                    19.3361    19.3541   0.0096    +0.0180  +1.87
+  3w_P K=35                     4.3361     4.3363   0.0022    +0.0002  +0.07
+  3w_C K=40                    16.5095    16.5279   0.0092    +0.0184  +2.00
+  3w_P K=40                     6.5095     6.5101   0.0028    +0.0006  +0.20
+  3w_C K=45                    14.0889    14.1071   0.0088    +0.0182  +2.08
+  3w_P K=45                     9.0889     9.0893   0.0034    +0.0004  +0.12
+  3w_C K=50                    12.0269    12.0446   0.0083    +0.0177  +2.13
+  3w_P K=50                    12.0269    12.0268   0.0040    -0.0001  -0.04
+  3w_C K=60                     8.7918     8.8071   0.0074    +0.0153  +2.06
+  3w_P K=60                    18.7918    18.7893   0.0051    -0.0025  -0.50
+  2w_C K=50                     9.8707     9.8724   0.0063    +0.0017  +0.26
+  2w_P K=50                     9.8707     9.8676   0.0035    -0.0032  -0.91
+  BINARY_P K=40 pay=10          4.7679     4.7685   0.0016    +0.0005  +0.33
+  CHOOSER K=50                 21.8977    21.8828   0.0370    -0.0149  -0.40
+  KO_P K=45 B=35 (cont)         0.1226     0.2055   0.0003    +0.0830 +241.72
+  KO_P K=45 B=35 (BGK)          0.2172     0.2055   0.0003    -0.0117 -34.04
+
+================================================================================
+3. KO PUT: DISCRETE MONITORING FREQUENCY SENSITIVITY
+================================================================================
+All values use sigma=2.51, K=45, B=35, T=15td.
+Continuous formula (Reiner-Rubinstein): 0.12258
+BGK adjustment (4/day = 60 obs):        0.21723
+     1/day (  15 obs): MC = 0.29857 (SE 0.00133), BGK = 0.35109
+     4/day (  60 obs): MC = 0.20492 (SE 0.00108), BGK = 0.21723
+     8/day ( 120 obs): MC = 0.18168 (SE 0.00101), BGK = 0.18569
+    24/day ( 360 obs): MC = 0.15404 (SE 0.00092), BGK = 0.15684
+    96/day (1440 obs): MC = 0.13849 (SE 0.00086), BGK = 0.13899
+  Continuous limit:                MC ~ 0.12258
+
+================================================================================
+4. PER-QUOTE IMPLIED VOLATILITY
+================================================================================
+
+  Sym             K        T      Mid       IV
+  AC_50_P        50  0.05952   12.025   2.5096
+  AC_50_C        50  0.05952   12.025   2.5096
+  AC_35_P        35  0.05952    4.340   2.5112
+  AC_40_P        40  0.05952    6.525   2.5140
+  AC_45_P        45  0.05952    9.075   2.5068
+  AC_60_C        60  0.05952    8.825   2.5168
+  AC_50_P_2      50  0.03968    9.725   2.4722
+  AC_50_C_2      50  0.03968    9.725   2.4722
+
+  Mean IV: 2.5015, range: [2.4722, 2.5168]
+  Stated sigma: 2.5100
+
+================================================================================
+5. ARBITRAGE SEARCH
+================================================================================
+
+  5a. Put-Call Parity: C - P = S - K (r=0)
+     3w K=50: synth_long_cost = +C_ask - P_bid + K = 50.0500, spot_ask = 50.025
+              synth_short_proc = +C_bid - P_ask + K = 49.9500, spot_bid = 49.975
+              long_synth - short_spot = +0.0750 (must be >= 0 = no arb)
+              short_synth - long_spot = +0.0750 (must be >= 0 = no arb)
+     2w K=50: synth_long_cost = 50.0500 vs spot_ask = 50.025
+              synth_short_proc = 49.9500 vs spot_bid = 49.975
+              long_synth - short_spot = +0.0750
+              short_synth - long_spot = +0.0750
+
+  5b. Put vertical spreads (lower strike must be <= higher strike)
+     Put debit spread BUY 35 / SELL 40: debit=-2.150, max_payoff=5, min=0  (no-arb if 0 <= debit <= 5)
+     Put credit spread SELL 35 / BUY 40: credit=-2.220 (arb if credit > 0)
+     Put debit spread BUY 40 / SELL 45: debit=-2.500, max_payoff=5, min=0  (no-arb if 0 <= debit <= 5)
+     Put credit spread SELL 40 / BUY 45: credit=-2.600 (arb if credit > 0)
+     Put debit spread BUY 45 / SELL 50: debit=-2.900, max_payoff=5, min=0  (no-arb if 0 <= debit <= 5)
+     Put credit spread SELL 45 / BUY 50: credit=-3.000 (arb if credit > 0)
+
+  5c. Put butterflies (must be >= 0)
+     Bfly 35/40/45: mid value = +0.3650, min cost (worst quotes) = +0.4500  (arb if < 0)
+     Bfly 40/45/50: mid value = +0.4000, min cost (worst quotes) = +0.5000  (arb if < 0)
+
+  5d. Calendar spreads (longer T must be >= shorter T at same K, r=0)
+     SELL AC_50_P_2 @ 9.7 / BUY AC_50_P @ 12.05: net = -2.3500 (arb if > 0; long expiry value >= short)
+     SELL AC_50_C_2 @ 9.7 / BUY AC_50_C @ 12.05: net = -2.3500 (arb if > 0; long expiry value >= short)
+
+  5e. Chooser bounds
+     Chooser mid = 22.250
+     3w straddle mid = 24.050 (chooser must be <= this)
+     2w straddle mid = 19.450 (chooser must be >= this)
+     Chooser identity: C_3w + P_2w = 21.8977
+     SYNTHETIC chooser cost = C_3w_ask + P_2w_ask = 21.8000
+     Buy chooser (22.3) / Sell synth (21.7) -> net -0.6000 (arb if > 0)
+     Sell chooser (22.2) / Buy synth (21.8000) -> net +0.4000 (arb if > 0)
+
+  5f. KO put bounds
+     Vanilla 3w put K=45 mid = 9.075
+     KO put mid = 0.1625
+     KO <= vanilla put always (knock-out can only reduce payoff): True
+
+  5g. Binary put bounds
+     Binary put K=40 pay=10 mid = 5.050, must be in [0, 10]
+     Binary proxy from put spread (P(40)-P(35))/5 * 10 = 4.370
+     Diff from market binary mid: +0.680
+
+================================================================================
+6. SENSITIVITY ANALYSIS
+================================================================================
+
+  Fair-value table by scenario:
+  Scenario                                    AC_50_P    AC_50_C    AC_35_P    AC_40_P    AC_45_P    AC_60_C  AC_50_P_2  AC_50_C_2   AC_50_CO   AC_40_BP   AC_45_KO
+  Base       sigma=2.51, T=15td/10td          12.0269    12.0269     4.3361     6.5095     9.0889     8.7918     9.8707     9.8707    21.8977     4.7679     0.2172
+  Vol -8%   sigma=2.30                        11.0480    11.0480     3.6555     5.6952     8.1751     7.7701     9.0599     9.0599    20.1079     4.5340     0.2603
+  Vol +8%   sigma=2.71                        12.9521    12.9521     4.9977     7.2877     9.9547     9.7645    10.6390    10.6390    23.5911     4.9724     0.1848
+  Vol -16%  sigma=2.10                        10.1092    10.1092     3.0259     4.9251     7.3014     6.7994     8.2840     8.2840    18.3932     4.2883     0.3126
+  Vol +16%  sigma=2.91                        13.8699    13.8699     5.6682     8.0662    10.8151    10.7349    11.4032    11.4032    25.2731     5.1623     0.1588
+  T calendar 21cd/14cd /365                   11.8303    11.8303     4.1977     6.3452     8.9052     8.5859     9.7077     9.7077    21.5380     4.7225     0.2251
+  T calendar 21cd/14cd /252                   14.1431    14.1431     5.8702     8.2990    11.0715    11.0247    11.6311    11.6311    25.7742     5.2166     0.1520
+
+  Per-instrument edge across scenarios (ASK-FAIR for buys, FAIR-BID for sells):
+  Sym           Base      Vol -8%   Vol +8%   Vol -16%  Vol +16%  T calend  T calend
+  AC_50_P        -0.023B   +0.952S   +0.902B   +1.891S   +1.820B   +0.170S   +2.093B
+  AC_50_C        -0.023B   +0.952S   +0.902B   +1.891S   +1.820B   +0.170S   +2.093B
+  AC_35_P        -0.006S   +0.674S   +0.648B   +1.304S   +1.318B   +0.132S   +1.520B
+  AC_40_P        -0.010S   +0.805S   +0.738B   +1.575S   +1.516B   +0.155S   +1.749B
+  AC_45_P        -0.011B   +0.875S   +0.855B   +1.749S   +1.715B   +0.145S   +1.972B
+  AC_60_C        +0.008S   +1.030S   +0.915B   +2.001S   +1.885B   +0.214S   +2.175B
+  AC_50_P_2      +0.121B   +0.640S   +0.889B   +1.416S   +1.653B   -0.008S   +1.881B
+  AC_50_C_2      +0.121B   +0.640S   +0.889B   +1.416S   +1.653B   -0.008S   +1.881B
+  AC_50_CO       +0.302S   +2.092S   +1.291B   +3.807S   +2.973B   +0.662S   +3.474B
+  AC_40_BP       +0.232S   +0.466S   +0.028S   +0.712S   +0.062B   +0.277S   +0.117B
+  AC_45_KO       +0.042B   +0.085B   +0.010B   +0.138B   -0.009S   +0.050B   -0.002S
+
+================================================================================
+7. GREEKS AT S=50 (per unit)
+================================================================================
+
+  Instr           Delta    Gamma       Vega
+  AC_35_P       -0.1871   0.0088     3.2791
+  AC_40_P       -0.2512   0.0104     3.8867
+  AC_45_P       -0.3162   0.0116     4.3407
+  AC_50_P       -0.3797   0.0124     4.6437
+  AC_50_C        0.6203   0.0124     4.6437
+  AC_60_C        0.5034   0.0130     4.8664
+  AC_50_P_2     -0.4013   0.0155     3.8513
+  AC_50_C_2      0.5987   0.0155     3.8513
+  AC_50_CO       0.2190   0.0279     8.4950
+  AC_40_BP      -0.1301   0.0028     1.0640
+  AC_45_KO       0.0058  -0.0004    -0.1326
+
+================================================================================
+8. PORTFOLIO ANALYSIS
+================================================================================
+
+  Strategy comparison (200k MC paths each):
+
+  Strategy                                  EV  MC_mean        SD  Sharpe  P>0%      P10      P50      P90     CVaR5
+  Baseline (writeup)                    +54.47   +43.69    1988.9  +0.022  61.5  -1376.4   +242.2  +1524.4   -6290.0
+  Greedy max-edge                       +54.47   +43.69    1988.9  +0.022  61.5  -1376.4   +242.2  +1524.4   -6290.0
+  Baseline w/o KO                       +39.20   +29.45    1873.8  +0.016  65.4  -1288.9   +315.6  +1415.4   -6202.5
+  Core (chooser+BP+2w straddle)         +38.79   +35.55     986.8  +0.036  50.4   -903.1     +8.6  +1096.0   -2388.9
+  Baseline + D-hedge (17 spot)          +54.05   +46.76    1661.3  +0.028  50.9  -1196.2    +27.9  +1585.2   -4618.5
+  Baseline w/ KO=250                    +46.84   +36.57    1913.2  +0.019  63.7  -1332.6   +285.9  +1514.4   -6246.3
+  Baseline w/ KO=100                    +42.26   +32.30    1885.0  +0.017  64.9  -1306.4   +312.1  +1440.4   -6220.0
+
+  Net Greeks at S=50 per strategy:
+  Strategy                                   D        G   V (vega)
+  Baseline (writeup)                    -16.84  -0.8197    -402.46
+  Greedy max-edge                       -16.84  -0.8197    -402.46
+  Baseline w/o KO                       -19.74  -0.6422    -336.14
+  Core (chooser+BP+2w straddle)          +5.43  +0.0093     -92.82
+  Baseline + D-hedge (17 spot)           +0.16  -0.8197    -402.46
+  Baseline w/ KO=250                    -18.29  -0.7310    -369.30
+  Baseline w/ KO=100                    -19.16  -0.6777    -349.41
+
+================================================================================
+9. KO POSITION SIZE SWEEP (mean-variance frontier)
+================================================================================
+
+   KO size       EV     mean       SD  Sharpe  P>0%     CVaR5    CVaR10
+         0   +39.20   +33.33   1852.8  +0.018  65.3   -6147.1   -4117.8
+        50   +40.73   +35.01   1857.8  +0.019  65.3   -6155.8   -4126.5
+       100   +42.26   +36.68   1864.3  +0.020  64.9   -6164.6   -4135.3
+       150   +43.78   +38.36   1872.5  +0.020  64.5   -6173.3   -4144.0
+       200   +45.31   +40.03   1882.2  +0.021  64.0   -6182.1   -4152.8
+       250   +46.84   +41.71   1893.4  +0.022  63.6   -6190.8   -4161.5
+       300   +48.37   +43.38   1906.1  +0.023  63.2   -6199.6   -4170.3
+       400   +51.42   +46.73   1935.9  +0.024  62.3   -6217.1   -4187.8
+       500   +54.47   +50.08   1971.3  +0.025  61.4   -6234.6   -4205.3
+
+================================================================================
+10. FINAL RECOMMENDATION
+================================================================================
+
+  Pareto check (higher mean, lower SD better):
+   Baseline (writeup)                  mean=+43.69 sd=1988.9 (DOMINATED by Greedy max-edge, Baseline + D-hedge (17 spot))
+   Greedy max-edge                     mean=+43.69 sd=1988.9 (DOMINATED by Baseline (writeup), Baseline + D-hedge (17 spot))
+   Baseline w/o KO                     mean=+29.45 sd=1873.8 (DOMINATED by Core (chooser+BP+2w straddle), Baseline + D-hedge (17 spot))
+   Core (chooser+BP+2w straddle)       mean=+35.55 sd=986.8 [OK] Pareto
+   Baseline + D-hedge (17 spot)        mean=+46.76 sd=1661.3 [OK] Pareto
+   Baseline w/ KO=250                  mean=+36.57 sd=1913.2 (DOMINATED by Baseline + D-hedge (17 spot))
+   Baseline w/ KO=100                  mean=+32.30 sd=1885.0 (DOMINATED by Core (chooser+BP+2w straddle), Baseline + D-hedge (17 spot))
+
+================================================================================
+11. PER-INSTRUMENT OPTIMAL TABLE
+================================================================================
+
+  Sym               Bid      Ask      Fair     Buy_E    Sell_E Action  Size       EV
+  AETHER         49.975   50.025   50.0000   -0.0250   -0.0250   SKIP     0    +0.00
+  AC_50_P        12.000   12.050   12.0269   -0.0231   -0.0269   SKIP     0    +0.00
+  AC_50_C        12.000   12.050   12.0269   -0.0231   -0.0269   SKIP     0    +0.00
+  AC_35_P         4.330    4.350    4.3361   -0.0139   -0.0061   SKIP     0    +0.00
+  AC_40_P         6.500    6.550    6.5095   -0.0405   -0.0095   SKIP     0    +0.00
+  AC_45_P         9.050    9.100    9.0889   -0.0111   -0.0389   SKIP     0    +0.00
+  AC_60_C         8.800    8.850    8.7918   -0.0582   +0.0082   SELL    50    +0.41
+  AC_50_P_2       9.700    9.750    9.8707   +0.1207   -0.1707    BUY    50    +6.04
+  AC_50_C_2       9.700    9.750    9.8707   +0.1207   -0.1707    BUY    50    +6.04
+  AC_50_CO       22.200   22.300   21.8977   -0.4023   +0.3023   SELL    50   +15.12
+  AC_40_BP        5.000    5.100    4.7679   -0.3321   +0.2321   SELL    50   +11.60
+  AC_45_KO        0.150    0.175    0.2055   +0.0305   -0.0555    BUY   500   +15.27
+
+  Total optimal EV (per unit): +54.47
+
+  TOTAL RUNTIME: 319.0s

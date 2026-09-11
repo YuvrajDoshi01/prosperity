@@ -1,0 +1,100 @@
+{
+  "inputs": {
+    "S0": 50.0,
+    "sigma": 2.51,
+    "T_days": 15,
+    "T_years": 0.05952380952380952,
+    "K": 45.0,
+    "B": 35.0,
+    "drift_per_year": -3.15005,
+    "ko_bid": 0.150,
+    "ko_ask": 0.175,
+    "ko_mid": 0.1625,
+    "vol_cap": 500,
+    "multiplier": 3000
+  },
+  "fair_value": {
+    "continuous_RR": 0.122575,
+    "mc_4_per_day_pooled": 0.206421,
+    "mc_4_per_day_combined_se": 0.000217,
+    "mc_4_per_day_99_CI": [0.205861, 0.206981],
+    "mc_4_per_day_seed_estimates": {
+      "101": 0.205088,
+      "202": 0.206262,
+      "303": 0.206915,
+      "404": 0.206581,
+      "505": 0.207260
+    },
+    "mc_4_per_day_total_paths": 25000000,
+    "bgk_4_per_day": 0.217232,
+    "bgk_error_at_4_per_day_abs": 0.010811,
+    "bgk_error_at_4_per_day_rel": 0.0524
+  },
+  "frequency_sweep": [
+    {"obs_per_day": 1,    "n_steps": 15,    "mc": 0.301353, "se": 0.000949, "bgk": 0.351090},
+    {"obs_per_day": 2,    "n_steps": 30,    "mc": 0.243782, "se": 0.000845, "bgk": 0.267624},
+    {"obs_per_day": 4,    "n_steps": 60,    "mc": 0.206547, "se": 0.000769, "bgk": 0.217232},
+    {"obs_per_day": 8,    "n_steps": 120,   "mc": 0.181365, "se": 0.000713, "bgk": 0.185694},
+    {"obs_per_day": 16,   "n_steps": 240,   "mc": 0.161754, "se": 0.000667, "bgk": 0.165353},
+    {"obs_per_day": 32,   "n_steps": 480,   "mc": 0.150810, "se": 0.000639, "bgk": 0.151916},
+    {"obs_per_day": 96,   "n_steps": 1440,  "mc": 0.138424, "se": 0.000607, "bgk": 0.138990},
+    {"obs_per_day": 1000, "n_steps": 15000, "mc": 0.125700, "se": 0.001800, "bgk": 0.127510}
+  ],
+  "implied_monitoring": {
+    "BGK_bisection_per_day": 13.5,
+    "MC_inferred_per_day": 16.0,
+    "comment": "Market prices as if monitoring is ~16/day, but brief states 4/day."
+  },
+  "edges": {
+    "1": {"fair": 0.301353, "buy_edge": 0.126353, "sell_edge": -0.151353, "buy_500_EV": 189529, "sell_500_EV": -227029},
+    "2": {"fair": 0.243782, "buy_edge": 0.068782, "sell_edge": -0.093782, "buy_500_EV": 103173, "sell_500_EV": -140673},
+    "4": {"fair": 0.206421, "buy_edge": 0.031421, "sell_edge": -0.056421, "buy_500_EV": 47131, "sell_500_EV": -84631},
+    "8": {"fair": 0.181365, "buy_edge": 0.006365, "sell_edge": -0.031365, "buy_500_EV": 9548, "sell_500_EV": -47048},
+    "16": {"fair": 0.161754, "buy_edge": -0.013246, "sell_edge": -0.011754, "buy_500_EV": -19869, "sell_500_EV": -17631},
+    "32": {"fair": 0.150810, "buy_edge": -0.024190, "sell_edge": -0.000810, "buy_500_EV": -36285, "sell_500_EV": -1215},
+    "96": {"fair": 0.138424, "buy_edge": -0.036576, "sell_edge": 0.011576, "buy_500_EV": -54864, "sell_500_EV": 17364},
+    "continuous": {"fair": 0.122575, "buy_edge": -0.052425, "sell_edge": 0.027425, "buy_500_EV": -78638, "sell_500_EV": 41138}
+  },
+  "bayes": {
+    "prior": {"4/d": 0.7, "8/d": 0.2, "16/d": 0.1},
+    "E_fair": 0.196937,
+    "E_buy_edge": 0.021937,
+    "E_sell_edge": -0.046937,
+    "bayes_best_action": 500,
+    "bayes_best_EV_USD": 32915.55,
+    "ev_decomposition_at_500": {
+      "4/d_P0.7": 47131,
+      "8/d_P0.2": 9548,
+      "16/d_P0.1": -19869,
+      "weighted": 32915
+    }
+  },
+  "minimax_regret": {
+    "three_scenario": {
+      "scenarios": ["4/d", "8/d", "16/d"],
+      "optimum_v": 352,
+      "max_regret_USD": 13992
+    },
+    "four_scenario": {
+      "scenarios": ["4/d", "8/d", "16/d", "continuous"],
+      "optimum_v": 24,
+      "max_regret_USD": 44904,
+      "scenario_best_action": {
+        "4/d": {"action": 500, "ev": 47131},
+        "8/d": {"action": 500, "ev": 9548},
+        "16/d": {"action": 0, "ev": 0},
+        "continuous": {"action": -500, "ev": 41138}
+      }
+    }
+  },
+  "decision": {
+    "ship_call": "BUY 500 AC_45_KO at 0.175",
+    "rationale": [
+      "Brief explicitly states 4/day monitoring",
+      "4/day MC verified to 0.206421 +/- 0.000217 (25M paths, t-stat 145 vs ASK)",
+      "Vanilla put cross-check (AC_45_P) at 9.05/9.10 confirms sigma calibration",
+      "Linear payoff -> Bayes optimum is bang-bang at v=cap"
+    ],
+    "robust_fallback": "BUY 100 if continuous-monitoring scenario carries non-trivial weight"
+  }
+}

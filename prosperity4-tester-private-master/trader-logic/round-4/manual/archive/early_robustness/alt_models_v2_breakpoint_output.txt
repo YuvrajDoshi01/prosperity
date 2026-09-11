@@ -1,0 +1,100 @@
+Finding break-points where OPTIMAL_7POS goes <=0 EV
+================================================================================
+
+Sigma sweep (low):
+    [sigma_2.0] 5,000,000/5,000,000 (4.8s)
+  [sigma_2.0] N=5,000,000 done in 4.8s
+  DROP_60C       E=$     +505,308  SD/unit=$  3,072,439  CVaR5/unit=$ -5,135,381  P>0= 52.4%
+  OPTIMAL_7POS   E=$      -38,512  SD/unit=$  2,501,026  CVaR5/unit=$ -3,577,118  P>0= 38.0%
+  USER_SAFE      E=$      +82,383  SD/unit=$    519,925  CVaR5/unit=$ -1,006,076  P>0= 53.8%
+  KO_ZERO        E=$     +271,826  SD/unit=$  2,280,397  CVaR5/unit=$ -4,872,881  P>0= 54.2%
+    [sigma_2.1] 5,000,000/5,000,000 (4.8s)
+  [sigma_2.1] N=5,000,000 done in 4.8s
+  DROP_60C       E=$     +424,853  SD/unit=$  3,126,122  CVaR5/unit=$ -5,526,853  P>0= 51.3%
+  OPTIMAL_7POS   E=$      -10,923  SD/unit=$  2,508,942  CVaR5/unit=$ -3,678,719  P>0= 39.7%
+  USER_SAFE      E=$      +69,970  SD/unit=$    538,926  CVaR5/unit=$ -1,084,371  P>0= 52.7%
+  KO_ZERO        E=$     +237,345  SD/unit=$  2,398,932  CVaR5/unit=$ -5,264,353  P>0= 53.3%
+    [sigma_2.15] 5,000,000/5,000,000 (4.8s)
+  [sigma_2.15] N=5,000,000 done in 4.8s
+  DROP_60C       E=$     +388,636  SD/unit=$  3,153,011  CVaR5/unit=$ -5,745,805  P>0= 50.8%
+  OPTIMAL_7POS   E=$       +3,665  SD/unit=$  2,511,501  CVaR5/unit=$ -3,739,449  P>0= 40.5%
+  USER_SAFE      E=$      +64,481  SD/unit=$    548,504  CVaR5/unit=$ -1,128,161  P>0= 52.2%
+  KO_ZERO        E=$     +223,054  SD/unit=$  2,459,113  CVaR5/unit=$ -5,483,305  P>0= 52.9%
+    [sigma_2.2] 5,000,000/5,000,000 (4.8s)
+  [sigma_2.2] N=5,000,000 done in 4.8s
+  DROP_60C       E=$     +353,333  SD/unit=$  3,188,936  CVaR5/unit=$ -5,960,511  P>0= 50.3%
+  OPTIMAL_7POS   E=$      +22,681  SD/unit=$  2,524,553  CVaR5/unit=$ -3,798,578  P>0= 41.4%
+  USER_SAFE      E=$      +58,934  SD/unit=$    559,312  CVaR5/unit=$ -1,171,102  P>0= 51.7%
+  KO_ZERO        E=$     +206,679  SD/unit=$  2,523,617  CVaR5/unit=$ -5,698,011  P>0= 52.6%
+    [sigma_2.25] 5,000,000/5,000,000 (4.9s)
+  [sigma_2.25] N=5,000,000 done in 4.9s
+  DROP_60C       E=$     +321,189  SD/unit=$  3,220,905  CVaR5/unit=$ -6,150,370  P>0= 49.8%
+  OPTIMAL_7POS   E=$      +42,267  SD/unit=$  2,536,266  CVaR5/unit=$ -3,850,717  P>0= 42.2%
+  USER_SAFE      E=$      +53,949  SD/unit=$    569,256  CVaR5/unit=$ -1,209,074  P>0= 51.3%
+  KO_ZERO        E=$     +192,579  SD/unit=$  2,583,811  CVaR5/unit=$ -5,887,870  P>0= 52.2%
+
+Microstructure sweep (high):
+    [micro_0.3] 5,000,000/5,000,000 (4.8s)
+  [micro_0.3] N=5,000,000 done in 4.8s
+  DROP_60C       E=$      +72,174  SD/unit=$  3,301,977  CVaR5/unit=$ -7,338,313  P>0= 47.4%
+  OPTIMAL_7POS   E=$      +65,954  SD/unit=$  2,492,137  CVaR5/unit=$ -4,175,327  P>0= 45.6%
+  USER_SAFE      E=$      +18,043  SD/unit=$    617,488  CVaR5/unit=$ -1,446,663  P>0= 48.9%
+  KO_ZERO        E=$     +117,279  SD/unit=$  2,934,365  CVaR5/unit=$ -7,075,813  P>0= 50.6%
+    [micro_0.5] 5,000,000/5,000,000 (4.8s)
+  [micro_0.5] N=5,000,000 done in 4.8s
+  DROP_60C       E=$       +6,243  SD/unit=$  3,201,637  CVaR5/unit=$ -7,337,353  P>0= 47.1%
+  OPTIMAL_7POS   E=$       +1,236  SD/unit=$  2,383,161  CVaR5/unit=$ -4,198,616  P>0= 45.0%
+  USER_SAFE      E=$       +9,922  SD/unit=$    609,066  CVaR5/unit=$ -1,446,471  P>0= 48.6%
+  KO_ZERO        E=$     +114,665  SD/unit=$  2,935,795  CVaR5/unit=$ -7,074,853  P>0= 50.5%
+    [micro_0.75] 5,000,000/5,000,000 (4.9s)
+  [micro_0.75] N=5,000,000 done in 4.9s
+  DROP_60C       E=$      -69,775  SD/unit=$  3,081,688  CVaR5/unit=$ -7,372,121  P>0= 46.9%
+  OPTIMAL_7POS   E=$      -73,894  SD/unit=$  2,248,516  CVaR5/unit=$ -4,195,290  P>0= 44.5%
+  USER_SAFE      E=$         +835  SD/unit=$    600,023  CVaR5/unit=$ -1,453,424  P>0= 48.4%
+  KO_ZERO        E=$     +115,104  SD/unit=$  2,944,201  CVaR5/unit=$ -7,109,621  P>0= 50.5%
+    [micro_0.9] 5,000,000/5,000,000 (4.9s)
+  [micro_0.9] N=5,000,000 done in 4.9s
+  DROP_60C       E=$     -115,625  SD/unit=$  2,988,294  CVaR5/unit=$ -7,296,347  P>0= 46.7%
+  OPTIMAL_7POS   E=$     -121,133  SD/unit=$  2,153,062  CVaR5/unit=$ -4,166,165  P>0= 44.0%
+  USER_SAFE      E=$       -4,605  SD/unit=$    590,993  CVaR5/unit=$ -1,438,269  P>0= 48.2%
+  KO_ZERO        E=$     +115,873  SD/unit=$  2,932,480  CVaR5/unit=$ -7,033,847  P>0= 50.5%
+
+Large negative drift sweep:
+    [drift_-0.2] 5,000,000/5,000,000 (4.8s)
+  [drift_-0.2] N=5,000,000 done in 4.8s
+  DROP_60C       E=$     +158,700  SD/unit=$  3,418,585  CVaR5/unit=$ -7,185,542  P>0= 47.4%
+  OPTIMAL_7POS   E=$     +159,615  SD/unit=$  2,622,700  CVaR5/unit=$ -4,141,582  P>0= 46.5%
+  USER_SAFE      E=$      +28,002  SD/unit=$    624,701  CVaR5/unit=$ -1,416,108  P>0= 48.8%
+  KO_ZERO        E=$     +111,975  SD/unit=$  2,907,674  CVaR5/unit=$ -6,923,042  P>0= 50.2%
+    [drift_-0.5] 5,000,000/5,000,000 (4.7s)
+  [drift_-0.5] N=5,000,000 done in 4.7s
+  DROP_60C       E=$     +153,801  SD/unit=$  3,381,349  CVaR5/unit=$ -6,929,538  P>0= 46.9%
+  OPTIMAL_7POS   E=$     +166,091  SD/unit=$  2,602,941  CVaR5/unit=$ -4,054,427  P>0= 46.7%
+  USER_SAFE      E=$      +26,882  SD/unit=$    616,105  CVaR5/unit=$ -1,364,908  P>0= 48.4%
+  KO_ZERO        E=$     +105,327  SD/unit=$  2,860,215  CVaR5/unit=$ -6,667,038  P>0= 49.7%
+    [drift_-1.0] 5,000,000/5,000,000 (4.8s)
+  [drift_-1.0] N=5,000,000 done in 4.8s
+  DROP_60C       E=$     +134,393  SD/unit=$  3,321,625  CVaR5/unit=$ -6,647,478  P>0= 46.0%
+  OPTIMAL_7POS   E=$     +172,227  SD/unit=$  2,569,715  CVaR5/unit=$ -3,968,696  P>0= 47.0%
+  USER_SAFE      E=$      +23,106  SD/unit=$    603,019  CVaR5/unit=$ -1,308,496  P>0= 47.4%
+  KO_ZERO        E=$      +87,241  SD/unit=$  2,788,944  CVaR5/unit=$ -6,384,978  P>0= 48.8%
+
+Large positive drift sweep:
+    [drift_+0.3] 5,000,000/5,000,000 (4.8s)
+  [drift_+0.3] N=5,000,000 done in 4.8s
+  DROP_60C       E=$     +167,276  SD/unit=$  3,482,616  CVaR5/unit=$ -7,585,680  P>0= 48.2%
+  OPTIMAL_7POS   E=$     +153,589  SD/unit=$  2,659,024  CVaR5/unit=$ -4,259,415  P>0= 46.2%
+  USER_SAFE      E=$      +29,794  SD/unit=$    639,001  CVaR5/unit=$ -1,496,136  P>0= 49.6%
+  KO_ZERO        E=$     +121,506  SD/unit=$  2,985,844  CVaR5/unit=$ -7,323,180  P>0= 51.0%
+    [drift_+0.5] 5,000,000/5,000,000 (4.8s)
+  [drift_+0.5] N=5,000,000 done in 4.8s
+  DROP_60C       E=$     +167,560  SD/unit=$  3,510,789  CVaR5/unit=$ -7,771,263  P>0= 48.6%
+  OPTIMAL_7POS   E=$     +150,692  SD/unit=$  2,671,237  CVaR5/unit=$ -4,307,559  P>0= 46.1%
+  USER_SAFE      E=$      +30,002  SD/unit=$    645,560  CVaR5/unit=$ -1,533,253  P>0= 50.0%
+  KO_ZERO        E=$     +123,686  SD/unit=$  3,022,614  CVaR5/unit=$ -7,508,763  P>0= 51.3%
+    [drift_+1.0] 5,000,000/5,000,000 (4.7s)
+  [drift_+1.0] N=5,000,000 done in 4.7s
+  DROP_60C       E=$     +166,018  SD/unit=$  3,576,429  CVaR5/unit=$ -8,068,610  P>0= 49.2%
+  OPTIMAL_7POS   E=$     +140,839  SD/unit=$  2,703,313  CVaR5/unit=$ -4,395,962  P>0= 45.9%
+  USER_SAFE      E=$      +29,857  SD/unit=$    660,261  CVaR5/unit=$ -1,592,722  P>0= 50.6%
+  KO_ZERO        E=$     +124,190  SD/unit=$  3,102,102  CVaR5/unit=$ -7,806,110  P>0= 52.0%

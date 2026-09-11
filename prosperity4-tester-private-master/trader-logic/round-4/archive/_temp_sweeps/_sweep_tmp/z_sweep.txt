@@ -1,0 +1,5 @@
+v5_z1_5 | 1k_d3=Total profit: 5,596 | def=Total profit: 127,210 | imc=Total profit: 120,318
+v5_z1_75 | 1k_d3=Total profit: 5,586 | def=Total profit: 129,580 | imc=Total profit: 120,046
+v5_z2_0 | 1k_d3=Total profit: 5,586 | def=Total profit: 133,730 | imc=Total profit: 124,284
+v5_z2_25 | 1k_d3=Total profit: 5,586 | def=Total profit: 125,668 | imc=Total profit: 114,840
+v5_z2_5 | 1k_d3=Total profit: 8,516 | def=Total profit: 120,656 | imc=Total profit: 107,942

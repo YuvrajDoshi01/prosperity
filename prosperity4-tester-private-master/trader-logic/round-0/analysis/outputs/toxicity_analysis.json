@@ -1,0 +1,122 @@
+{
+  "day_-2": {
+    "TOMATOES": {
+      "500": {
+        "n_fills": 397,
+        "toxicity_rate": 0.012594458438287154,
+        "mean_passive_pnl": 6.44080604534005,
+        "toxic_mean_pnl": -1.6,
+        "benign_mean_pnl": 6.543367346938775,
+        "buy_taker_toxicity": 0.010582010582010581,
+        "sell_taker_toxicity": 0.014423076923076924
+      },
+      "1000": {
+        "n_fills": 397,
+        "toxicity_rate": 0.015113350125944584,
+        "mean_passive_pnl": 6.55919395465995,
+        "toxic_mean_pnl": -2.0,
+        "benign_mean_pnl": 6.690537084398977,
+        "buy_taker_toxicity": 0.021164021164021163,
+        "sell_taker_toxicity": 0.009615384615384616
+      },
+      "2000": {
+        "n_fills": 397,
+        "toxicity_rate": 0.017632241813602016,
+        "mean_passive_pnl": 6.414357682619648,
+        "toxic_mean_pnl": -2.5714285714285716,
+        "benign_mean_pnl": 6.575641025641025,
+        "buy_taker_toxicity": 0.021164021164021163,
+        "sell_taker_toxicity": 0.014423076923076924
+      }
+    },
+    "EMERALDS": {
+      "500": {
+        "n_fills": 191,
+        "toxicity_rate": 0.0,
+        "mean_passive_pnl": 7.87434554973822,
+        "toxic_mean_pnl": 0,
+        "benign_mean_pnl": 7.87434554973822,
+        "buy_taker_toxicity": 0.0,
+        "sell_taker_toxicity": 0.0
+      },
+      "1000": {
+        "n_fills": 191,
+        "toxicity_rate": 0.0,
+        "mean_passive_pnl": 7.853403141361256,
+        "toxic_mean_pnl": 0,
+        "benign_mean_pnl": 7.853403141361256,
+        "buy_taker_toxicity": 0.0,
+        "sell_taker_toxicity": 0.0
+      },
+      "2000": {
+        "n_fills": 191,
+        "toxicity_rate": 0.0,
+        "mean_passive_pnl": 7.93717277486911,
+        "toxic_mean_pnl": 0,
+        "benign_mean_pnl": 7.93717277486911,
+        "buy_taker_toxicity": 0.0,
+        "sell_taker_toxicity": 0.0
+      }
+    }
+  },
+  "day_-1": {
+    "EMERALDS": {
+      "500": {
+        "n_fills": 208,
+        "toxicity_rate": 0.0,
+        "mean_passive_pnl": 7.634615384615385,
+        "toxic_mean_pnl": 0,
+        "benign_mean_pnl": 7.634615384615385,
+        "buy_taker_toxicity": 0.0,
+        "sell_taker_toxicity": 0.0
+      },
+      "1000": {
+        "n_fills": 208,
+        "toxicity_rate": 0.0,
+        "mean_passive_pnl": 7.730769230769231,
+        "toxic_mean_pnl": 0,
+        "benign_mean_pnl": 7.730769230769231,
+        "buy_taker_toxicity": 0.0,
+        "sell_taker_toxicity": 0.0
+      },
+      "2000": {
+        "n_fills": 208,
+        "toxicity_rate": 0.0,
+        "mean_passive_pnl": 7.634615384615385,
+        "toxic_mean_pnl": 0,
+        "benign_mean_pnl": 7.634615384615385,
+        "buy_taker_toxicity": 0.0,
+        "sell_taker_toxicity": 0.0
+      }
+    },
+    "TOMATOES": {
+      "500": {
+        "n_fills": 423,
+        "toxicity_rate": 0.01182033096926714,
+        "mean_passive_pnl": 6.443262411347518,
+        "toxic_mean_pnl": -2.3,
+        "benign_mean_pnl": 6.547846889952153,
+        "buy_taker_toxicity": 0.015151515151515152,
+        "sell_taker_toxicity": 0.008888888888888889
+      },
+      "1000": {
+        "n_fills": 423,
+        "toxicity_rate": 0.01182033096926714,
+        "mean_passive_pnl": 6.471631205673759,
+        "toxic_mean_pnl": -2.4,
+        "benign_mean_pnl": 6.577751196172249,
+        "buy_taker_toxicity": 0.010101010101010102,
+        "sell_taker_toxicity": 0.013333333333333334
+      },
+      "2000": {
+        "n_fills": 423,
+        "toxicity_rate": 0.014184397163120567,
+        "mean_passive_pnl": 6.400709219858156,
+        "toxic_mean_pnl": -2.9166666666666665,
+        "benign_mean_pnl": 6.534772182254197,
+        "buy_taker_toxicity": 0.005050505050505051,
+        "sell_taker_toxicity": 0.022222222222222223
+      }
+    }
+  }
+}

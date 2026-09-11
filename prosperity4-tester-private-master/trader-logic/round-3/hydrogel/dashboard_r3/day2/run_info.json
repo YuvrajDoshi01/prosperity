@@ -1,0 +1,33 @@
+{
+  "product": "HYDROGEL_PACK",
+  "prices_file": "algo/round3_data/prices_round_3_day_2.csv",
+  "trades_file": "algo/round3_data/trades_round_3_day_2.csv",
+  "raw_rows": 120000,
+  "product_rows": 10000,
+  "available_products": [
+    "HYDROGEL_PACK",
+    "VELVETFRUIT_EXTRACT",
+    "VEV_4000",
+    "VEV_4500",
+    "VEV_5000",
+    "VEV_5100",
+    "VEV_5200",
+    "VEV_5300",
+    "VEV_5400",
+    "VEV_5500",
+    "VEV_6000",
+    "VEV_6500"
+  ],
+  "day_values": [
+    2
+  ],
+  "timestamp_min": 0,
+  "timestamp_max": 999900,
+  "timestamp_unique": 10000,
+  "timestamp_duplicates": 0,
+  "most_common_timestamp_step": 100.0,
+  "step_gaps_count": 0,
+  "start_mid": 10011.0,
+  "end_mid": 10010.0,
+  "net_mid_change": -1.0
+}

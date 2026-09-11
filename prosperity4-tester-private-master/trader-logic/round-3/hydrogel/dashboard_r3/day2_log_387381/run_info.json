@@ -1,0 +1,22 @@
+{
+  "product": "HYDROGEL_PACK",
+  "prices_file": "dashboard_r3/day2_log_387381/_prices_from_website_activitiesLog.csv",
+  "trades_file": null,
+  "raw_rows": 1000,
+  "product_rows": 1000,
+  "available_products": [
+    "HYDROGEL_PACK"
+  ],
+  "day_values": [
+    2
+  ],
+  "timestamp_min": 0,
+  "timestamp_max": 99900,
+  "timestamp_unique": 1000,
+  "timestamp_duplicates": 0,
+  "most_common_timestamp_step": 100.0,
+  "step_gaps_count": 0,
+  "start_mid": 10011.0,
+  "end_mid": 9960.0,
+  "net_mid_change": -51.0
+}

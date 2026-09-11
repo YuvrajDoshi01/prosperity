@@ -1,0 +1,12 @@
+#!/bin/bash
+# Terminal shortcut for prosperity4btest
+
+# Get project root (one level up from scripts directory)
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Activate virtual environment
+source "$PROJECT_ROOT/venv/bin/activate"
+
+# Run the backtester with the provided algorithm and days
+# Using "$@" instead of just "$1" "$2" to allow for extra flags like --vis
+prosperity4btest "$@"

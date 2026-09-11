@@ -1,0 +1,24 @@
+Simulating 1,000,000 paths to verify +EV chooser combos...
+  ... 200,000 done
+  ... 400,000 done
+  ... 600,000 done
+  ... 800,000 done
+  ... 1,000,000 done
+
+  Instrument        MC mean      MC sd       BS fair       diff
+  ------------------------------------------------------------
+  chooser            21.8980     0.0166     21.8977     +0.0003
+  2w_straddle        19.7421     0.0179     19.7414     +0.0007
+  3w_straddle        24.0260     0.0236     24.0538     -0.0278
+  bp40                4.7611     0.0050      4.7679     -0.0068
+  ko_45               0.2063     0.0011      0.2055     +0.0008
+  p45                 9.0793     0.0108      9.0889     -0.0096
+
+Key relationships:
+  chooser - 2w_straddle (mean) = +2.1559
+  Static fair diff = +2.1563
+  -> chooser is worth +2.156 over 2w straddle pathwise (in expectation)
+  Selling chooser at 22.20, buying 2w straddle at 19.50: receive +2.70 cash
+  Pay -2.156 in expectation at expiry -> NET EV +0.544/unit (per-unit, before quantity scaling)
+  BUT: this is achieved by COMBINING chooser-sell edge (+0.302) and 2w-straddle-buy edge (+0.121*2=+0.242)
+  Sum: 0.302 + 0.242 = +0.544 -- exactly. NOT NEW alpha. Already in optimal portfolio.

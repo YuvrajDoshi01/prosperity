@@ -1,0 +1,514 @@
+{
+  "engagement_funnel": {
+    "total": 22130,
+    "ghosts": 16213,
+    "ghosts_pct": 73.26,
+    "algo_only": 1380,
+    "algo_only_pct": 6.24,
+    "manual_only": 418,
+    "manual_only_pct": 1.89,
+    "both": 4119,
+    "both_pct": 18.61,
+    "engaged_total": 5917
+  },
+  "leak_analysis": {
+    "leak_copiers": 1790,
+    "leak_pct_of_total": 8.09,
+    "leak_with_algo": 1732,
+    "leak_with_serious_algo": 1646,
+    "leak_pure_leeches": 33,
+    "serious_algo_leak_rate_pct": 38.82
+  },
+  "score_clusters": {
+    "top_exact_score_clusters": [
+      {
+        "score": 71500.0,
+        "count": 521
+      },
+      {
+        "score": 47700.0,
+        "count": 255
+      },
+      {
+        "score": 87994.1,
+        "count": 210
+      },
+      {
+        "score": 87897.1,
+        "count": 156
+      },
+      {
+        "score": 52700.0,
+        "count": 145
+      },
+      {
+        "score": 5000.0,
+        "count": 125
+      },
+      {
+        "score": 44000.0,
+        "count": 118
+      },
+      {
+        "score": 85000.0,
+        "count": 76
+      },
+      {
+        "score": 63000.0,
+        "count": 65
+      },
+      {
+        "score": 66500.0,
+        "count": 63
+      },
+      {
+        "score": 39000.0,
+        "count": 63
+      },
+      {
+        "score": 38700.0,
+        "count": 60
+      },
+      {
+        "score": 87896.1,
+        "count": 55
+      },
+      {
+        "score": 58000.0,
+        "count": 40
+      },
+      {
+        "score": 81000.0,
+        "count": 33
+      },
+      {
+        "score": 85999.0,
+        "count": 32
+      },
+      {
+        "score": 82996.1,
+        "count": 32
+      },
+      {
+        "score": 76498.0,
+        "count": 29
+      },
+      {
+        "score": 76499.0,
+        "count": 26
+      },
+      {
+        "score": 51300.0,
+        "count": 23
+      }
+    ],
+    "histogram_1k_bins": [
+      {
+        "range_low": 0,
+        "range_high": 1000,
+        "count": 34
+      },
+      {
+        "range_low": 1000,
+        "range_high": 2000,
+        "count": 2
+      },
+      {
+        "range_low": 2000,
+        "range_high": 3000,
+        "count": 5
+      },
+      {
+        "range_low": 3000,
+        "range_high": 4000,
+        "count": 1
+      },
+      {
+        "range_low": 4000,
+        "range_high": 5000,
+        "count": 8
+      },
+      {
+        "range_low": 5000,
+        "range_high": 6000,
+        "count": 129
+      },
+      {
+        "range_low": 6000,
+        "range_high": 7000,
+        "count": 3
+      },
+      {
+        "range_low": 7000,
+        "range_high": 8000,
+        "count": 4
+      },
+      {
+        "range_low": 8000,
+        "range_high": 9000,
+        "count": 2
+      },
+      {
+        "range_low": 9000,
+        "range_high": 10000,
+        "count": 13
+      },
+      {
+        "range_low": 10000,
+        "range_high": 11000,
+        "count": 2
+      },
+      {
+        "range_low": 11000,
+        "range_high": 12000,
+        "count": 2
+      },
+      {
+        "range_low": 12000,
+        "range_high": 13000,
+        "count": 2
+      },
+      {
+        "range_low": 14000,
+        "range_high": 15000,
+        "count": 2
+      },
+      {
+        "range_low": 19000,
+        "range_high": 20000,
+        "count": 15
+      },
+      {
+        "range_low": 20000,
+        "range_high": 21000,
+        "count": 4
+      },
+      {
+        "range_low": 23000,
+        "range_high": 24000,
+        "count": 3
+      },
+      {
+        "range_low": 24000,
+        "range_high": 25000,
+        "count": 20
+      },
+      {
+        "range_low": 25000,
+        "range_high": 26000,
+        "count": 2
+      },
+      {
+        "range_low": 26000,
+        "range_high": 27000,
+        "count": 2
+      },
+      {
+        "range_low": 27000,
+        "range_high": 28000,
+        "count": 3
+      },
+      {
+        "range_low": 28000,
+        "range_high": 29000,
+        "count": 2
+      },
+      {
+        "range_low": 29000,
+        "range_high": 30000,
+        "count": 1
+      },
+      {
+        "range_low": 30000,
+        "range_high": 31000,
+        "count": 1
+      },
+      {
+        "range_low": 31000,
+        "range_high": 32000,
+        "count": 2
+      },
+      {
+        "range_low": 32000,
+        "range_high": 33000,
+        "count": 3
+      },
+      {
+        "range_low": 33000,
+        "range_high": 34000,
+        "count": 1
+      },
+      {
+        "range_low": 34000,
+        "range_high": 35000,
+        "count": 16
+      },
+      {
+        "range_low": 35000,
+        "range_high": 36000,
+        "count": 3
+      },
+      {
+        "range_low": 36000,
+        "range_high": 37000,
+        "count": 6
+      }
+    ],
+    "independent_solver_band_count": 1630,
+    "independent_solver_pct_of_total": 7.37
+  },
+  "country_signatures": {
+    "countries_min50_teams": [
+      {
+        "country": "IN",
+        "teams": 9531,
+        "algo_pct": 17.4,
+        "manual_pct": 13.5,
+        "both_pct": 11.3,
+        "leak_pct": 3.7,
+        "top100_count": 13
+      },
+      {
+        "country": "US",
+        "teams": 4334,
+        "algo_pct": 30.3,
+        "manual_pct": 25.4,
+        "both_pct": 23.7,
+        "leak_pct": 12.2,
+        "top100_count": 24
+      },
+      {
+        "country": "GB",
+        "teams": 2018,
+        "algo_pct": 26.6,
+        "manual_pct": 21.8,
+        "both_pct": 20.5,
+        "leak_pct": 9.1,
+        "top100_count": 14
+      },
+      {
+        "country": "AU",
+        "teams": 1137,
+        "algo_pct": 33.4,
+        "manual_pct": 28.4,
+        "both_pct": 26.4,
+        "leak_pct": 12.7,
+        "top100_count": 14
+      },
+      {
+        "country": "FR",
+        "teams": 632,
+        "algo_pct": 33.1,
+        "manual_pct": 26.3,
+        "both_pct": 25.0,
+        "leak_pct": 9.5,
+        "top100_count": 1
+      },
+      {
+        "country": "CA",
+        "teams": 598,
+        "algo_pct": 24.7,
+        "manual_pct": 21.9,
+        "both_pct": 20.2,
+        "leak_pct": 9.0,
+        "top100_count": 3
+      },
+      {
+        "country": "NL",
+        "teams": 453,
+        "algo_pct": 32.0,
+        "manual_pct": 29.6,
+        "both_pct": 27.4,
+        "leak_pct": 14.3,
+        "top100_count": 2
+      },
+      {
+        "country": "DE",
+        "teams": 419,
+        "algo_pct": 36.5,
+        "manual_pct": 31.3,
+        "both_pct": 28.6,
+        "leak_pct": 13.4,
+        "top100_count": 4
+      },
+      {
+        "country": "CH",
+        "teams": 300,
+        "algo_pct": 37.7,
+        "manual_pct": 34.3,
+        "both_pct": 33.7,
+        "leak_pct": 15.0,
+        "top100_count": 4
+      },
+      {
+        "country": "CN",
+        "teams": 279,
+        "algo_pct": 32.3,
+        "manual_pct": 29.4,
+        "both_pct": 26.9,
+        "leak_pct": 9.7,
+        "top100_count": 2
+      },
+      {
+        "country": "HK",
+        "teams": 249,
+        "algo_pct": 35.3,
+        "manual_pct": 31.3,
+        "both_pct": 28.5,
+        "leak_pct": 12.9,
+        "top100_count": 2
+      },
+      {
+        "country": "IT",
+        "teams": 245,
+        "algo_pct": 32.2,
+        "manual_pct": 29.4,
+        "both_pct": 27.3,
+        "leak_pct": 15.5,
+        "top100_count": 1
+      },
+      {
+        "country": "SG",
+        "teams": 234,
+        "algo_pct": 30.8,
+        "manual_pct": 27.4,
+        "both_pct": 25.6,
+        "leak_pct": 12.0,
+        "top100_count": 0
+      },
+      {
+        "country": "ES",
+        "teams": 116,
+        "algo_pct": 40.5,
+        "manual_pct": 33.6,
+        "both_pct": 31.9,
+        "leak_pct": 15.5,
+        "top100_count": 3
+      },
+      {
+        "country": "RO",
+        "teams": 102,
+        "algo_pct": 29.4,
+        "manual_pct": 26.5,
+        "both_pct": 24.5,
+        "leak_pct": 7.8,
+        "top100_count": 0
+      },
+      {
+        "country": "IE",
+        "teams": 100,
+        "algo_pct": 35.0,
+        "manual_pct": 32.0,
+        "both_pct": 30.0,
+        "leak_pct": 10.0,
+        "top100_count": 0
+      },
+      {
+        "country": "PL",
+        "teams": 84,
+        "algo_pct": 41.7,
+        "manual_pct": 41.7,
+        "both_pct": 36.9,
+        "leak_pct": 16.7,
+        "top100_count": 1
+      },
+      {
+        "country": "VN",
+        "teams": 79,
+        "algo_pct": 25.3,
+        "manual_pct": 17.7,
+        "both_pct": 17.7,
+        "leak_pct": 7.6,
+        "top100_count": 0
+      },
+      {
+        "country": "KR",
+        "teams": 54,
+        "algo_pct": 35.2,
+        "manual_pct": 27.8,
+        "both_pct": 27.8,
+        "leak_pct": 18.5,
+        "top100_count": 0
+      },
+      {
+        "country": "NZ",
+        "teams": 51,
+        "algo_pct": 41.2,
+        "manual_pct": 43.1,
+        "both_pct": 37.3,
+        "leak_pct": 19.6,
+        "top100_count": 0
+      },
+      {
+        "country": "BE",
+        "teams": 50,
+        "algo_pct": 24.0,
+        "manual_pct": 20.0,
+        "both_pct": 18.0,
+        "leak_pct": 8.0,
+        "top100_count": 0
+      }
+    ]
+  },
+  "elite_cohort": {
+    "elite_count": 100,
+    "overall_range": [
+      193299.91,
+      213845.27
+    ],
+    "overall_mean": 199792.4,
+    "algo_median": 110763.1,
+    "algo_min": 105304.81,
+    "manual_at_leak": 90,
+    "manual_non_leak": 10,
+    "non_leak_elite_manual_scores": [
+      87897,
+      87897,
+      87897,
+      87897,
+      87897,
+      87897,
+      87994,
+      87994,
+      87994,
+      87994
+    ]
+  },
+  "irrationality": {
+    "algo_negative_count": 394,
+    "algo_min": -40420962.55,
+    "algo_mean_neg": -286129.4,
+    "manual_negative_count": 266,
+    "manual_min": -3507500.0
+  },
+  "engaged_cdf": {
+    "n_engaged": 5917,
+    "cdf": {
+      "top_1_pct_threshold": 197899.0,
+      "top_5_pct_threshold": 188720.8,
+      "top_10_pct_threshold": 186780.4,
+      "top_25_pct_threshold": 181376.7,
+      "top_50_pct_threshold": 140591.0,
+      "top_75_pct_threshold": 71461.7,
+      "top_90_pct_threshold": 23400.0
+    }
+  },
+  "r2_behavioral_buckets": {
+    "population_interpretation": "fractions as PERCENT of registered teams (out of 22130)",
+    "ghost": 73.3,
+    "copy_paster": 8.0,
+    "partial_solver": 7.4,
+    "nash_hunter": 1.5,
+    "contrarian": 0.5,
+    "round_number_picker": 5.0,
+    "over_invester": 2.0,
+    "remainder": 2.3,
+    "notes": [
+      "Ghost bucket IS registered but INACTIVE; effectively sp=0 in Speed rank.",
+      "Copy-paster bucket will follow whatever allocation goes viral on Discord.",
+      "Nash hunter + contrarian buckets are SMALL but STRATEGIC (dense near equilibrium).",
+      "Round-number pickers cluster at Speed = 20, 30, 33, 40, 50.",
+      "Over-investers push Speed distribution top (sp >= 60)."
+    ]
+  }
+}

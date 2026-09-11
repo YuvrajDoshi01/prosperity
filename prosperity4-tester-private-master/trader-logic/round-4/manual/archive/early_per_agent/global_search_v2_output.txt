@@ -1,0 +1,241 @@
+==========================================================================================
+STEP 0: Fair values (sigma=2.51, 15 trading days, 4 obs/day)
+==========================================================================================
+  AC             fair=  50.0000  bid= 49.975 ask= 50.025 cap=200
+  AC_50_P        fair=  12.0269  bid= 12.000 ask= 12.050 cap=50
+  AC_50_C        fair=  12.0269  bid= 12.000 ask= 12.050 cap=50
+  AC_35_P        fair=   4.3361  bid=  4.330 ask=  4.350 cap=50
+  AC_40_P        fair=   6.5095  bid=  6.500 ask=  6.550 cap=50
+  AC_45_P        fair=   9.0889  bid=  9.050 ask=  9.100 cap=50
+  AC_60_C        fair=   8.7918  bid=  8.800 ask=  8.850 cap=50
+  AC_50_P_2      fair=   9.8707  bid=  9.700 ask=  9.750 cap=50
+  AC_50_C_2      fair=   9.8707  bid=  9.700 ask=  9.750 cap=50
+  AC_50_CO       fair=  21.8977  bid= 22.200 ask= 22.300 cap=50
+  AC_40_BP       fair=   4.7679  bid=  5.000 ask=  5.100 cap=50
+  AC_45_KO       fair=   0.2068  bid=  0.150 ask=  0.175 cap=500
+  KO fair (MC, 400k paths, discrete monitoring 4/day): 0.2068
+
+==========================================================================================
+STEP 1: Per-instrument edge → theoretical optimum (boundary solution)
+==========================================================================================
+Symbol              Fair  BuyEdge  SellEdge   Cap  Optimal q   EV/path
+  AC               50.0000  -0.0250   -0.0250   200         +0    +0.000
+  AC_50_P          12.0269  -0.0231   -0.0269    50         +0    +0.000
+  AC_50_C          12.0269  -0.0231   -0.0269    50         +0    +0.000
+  AC_35_P           4.3361  -0.0139   -0.0061    50         +0    +0.000
+  AC_40_P           6.5095  -0.0405   -0.0095    50         +0    +0.000
+  AC_45_P           9.0889  -0.0111   -0.0389    50         +0    +0.000
+  AC_60_C           8.7918  -0.0582   +0.0082    50        -50    +0.410
+  AC_50_P_2         9.8707  +0.1207   -0.1707    50        +50    +6.035
+  AC_50_C_2         9.8707  +0.1207   -0.1707    50        +50    +6.035
+  AC_50_CO         21.8977  -0.4023   +0.3023    50        -50   +15.117
+  AC_40_BP          4.7679  -0.3321   +0.2321    50        -50   +11.603
+  AC_45_KO          0.2068  +0.0318   -0.0568   500       +500   +15.894
+  TOTAL THEORETICAL EV (per path, per unit): +55.096
+  With ×3000: $+165,287
+
+==========================================================================================
+STEP 2: Per-instrument brute-force scan over q in {-cap..cap}
+(should produce LINEAR EV vs q, with optimum at boundary)
+==========================================================================================
+Generating 1,000,000 GBM paths for brute-force evaluation...
+
+Symbol           BS_fair   MC_fair    diff
+  AC               50.0000   50.0322 +0.0322
+  AC_50_P          12.0269   12.0092 -0.0177
+  AC_50_C          12.0269   12.0415 +0.0145
+  AC_35_P           4.3361    4.3279 -0.0083
+  AC_40_P           6.5095    6.4977 -0.0119
+  AC_45_P           9.0889    9.0738 -0.0151
+  AC_60_C           8.7918    8.8034 +0.0116
+  AC_50_P_2         9.8707    9.8544 -0.0163
+  AC_50_C_2         9.8707    9.9078 +0.0371
+  AC_50_CO         21.8977   21.9024 +0.0048
+  AC_40_BP          4.7679    4.7631 -0.0048
+  AC_45_KO          0.2068    0.2058 -0.0010
+
+For each instrument, scan q in {-cap..cap} step 1, evaluate isolated EV.
+Confirm: argmax_q EV(q) == ±cap = boundary.
+NOTE: For LOW-edge instruments (|edge|<0.05), 1M MC stderr on fair value ~ payoff_sd/sqrt(1M)
+      can flip the sign of EV. We use the ANALYTICAL fair value (FV[s]) as the clean signal:
+      EV_per_unit = fair - price (buy) or price - fair (sell).  MC validates within ±SE.
+
+Symbol           cap  BS edge_buy BS edge_sell  theory q  theory EV   MC SE Flag  
+  AC               200      -0.0250      -0.0250        +0     +0.000  0.0337 NOISY 
+  AC_50_P           50      -0.0231      -0.0269        +0     +0.000  0.0126 NOISY 
+  AC_50_C           50      -0.0231      -0.0269        +0     +0.000  0.0263 NOISY 
+  AC_35_P           50      -0.0139      -0.0061        +0     +0.000  0.0069 NOISY 
+  AC_40_P           50      -0.0405      -0.0095        +0     +0.000  0.0088 OK    
+  AC_45_P           50      -0.0111      -0.0389        +0     +0.000  0.0108 OK    
+  AC_60_C           50      -0.0582      +0.0082       -50     +0.410  0.0235 NOISY 
+  AC_50_P_2         50      +0.1207      -0.1707       +50     +6.035  0.0110 OK    
+  AC_50_C_2         50      +0.1207      -0.1707       +50     +6.035  0.0199 OK    
+  AC_50_CO          50      -0.4023      +0.3023       -50    +15.117  0.0248 OK    
+  AC_40_BP          50      -0.3321      +0.2321       -50    +11.603  0.0050 OK    
+  AC_45_KO         500      +0.0318      -0.0568      +500    +15.894  0.0011 OK    
+
+CONVEXITY/LINEARITY check on a representative high-edge instrument:
+  AC_50_CO (cap=50):
+    q=  -50  EV= +14.879
+    q=  -40  EV= +11.903
+    q=  -30  EV=  +8.928
+    q=  -20  EV=  +5.952
+    q=  -10  EV=  +2.976
+    q=   +0  EV=  -0.000
+    q=  +10  EV=  -3.976
+    q=  +20  EV=  -7.952
+    q=  +30  EV= -11.928
+    q=  +40  EV= -15.903
+    q=  +50  EV= -19.879
+  AC_45_KO (cap=500):
+    q= -500  EV= -27.909
+    q= -400  EV= -22.327
+    q= -300  EV= -16.746
+    q= -200  EV= -11.164
+    q= -100  EV=  -5.582
+    q=   +0  EV=  +0.000
+    q= +100  EV=  +3.082
+    q= +200  EV=  +6.164
+    q= +300  EV=  +9.246
+    q= +400  EV= +12.327
+    q= +500  EV= +15.409
+  AC_40_BP (cap=50):
+    q=  -50  EV= +11.845
+    q=  -40  EV=  +9.476
+    q=  -30  EV=  +7.107
+    q=  -20  EV=  +4.738
+    q=  -10  EV=  +2.369
+    q=   +0  EV=  -0.000
+    q=  +10  EV=  -3.369
+    q=  +20  EV=  -6.738
+    q=  +30  EV= -10.107
+    q=  +40  EV= -13.476
+    q=  +50  EV= -16.844
+  → EV is monotone increasing toward boundary (confirms LINEAR in q).
+
+==========================================================================================
+STEP 3: Subset enumeration over positive-edge positions
+(2^k = 64 subsets if 6 active. Mean is linear, so subset(EV) = sum(EV) for active.)
+==========================================================================================
+Active (positive-edge) instruments (6): ['AC_60_C', 'AC_50_P_2', 'AC_50_C_2', 'AC_50_CO', 'AC_40_BP', 'AC_45_KO']
+
+Evaluating all 64 subsets...
+
+Top 8 subsets by mean PnL/path:
+       Mean       SD      CV Active set                                                  
+    +53.625  1951.95   36.40 AC_60_C,AC_50_P_2,AC_50_C_2,AC_50_CO,AC_40_BP,AC_45_KO      
+    +52.792  1145.81   21.70 AC_50_P_2,AC_50_C_2,AC_50_CO,AC_40_BP,AC_45_KO              
+    +49.594  2488.91   50.19 AC_60_C,AC_50_P_2,AC_50_CO,AC_40_BP,AC_45_KO                
+    +48.761  1429.38   29.31 AC_50_P_2,AC_50_CO,AC_40_BP,AC_45_KO                        
+    +47.415  1970.15   41.55 AC_60_C,AC_50_C_2,AC_50_CO,AC_40_BP,AC_45_KO                
+    +46.582  1342.53   28.82 AC_50_C_2,AC_50_CO,AC_40_BP,AC_45_KO                        
+    +43.384  2404.31   55.42 AC_60_C,AC_50_CO,AC_40_BP,AC_45_KO                          
+    +42.551  1430.83   33.63 AC_50_CO,AC_40_BP,AC_45_KO                                  
+
+Full (all 6) is rank: #1 (mean +53.625, theoretical +55.096)
+Sum of individual EVs : +53.625
+Full-portfolio EV     : +53.625
+Interaction (full-sum): +0.0000 (≈0 confirms linearity of E[·])
+
+==========================================================================================
+STEP 4: Hidden arbitrage scan
+==========================================================================================
+
+4a. Put-call parity at K=50, T=3w (with r=0):
+    C + K = P + S  ⇒ C - P = S - K = 0 (since S0=K=50)
+    Market: C(ask)-P(bid) = +0.0500  (synthetic stock long)
+            C(bid)-P(ask) = -0.0500  (synthetic stock short)
+    AC bid=49.975, ask=50.025.  Synthetic vs real:
+    Synthetic long cost  = 50.050 vs AC ask 50.025  → arb gap +0.025
+    Synthetic short cost = 49.950 vs AC bid 49.975  → arb gap -0.025
+    NO PCP arbitrage (gaps positive both ways = bid/ask spread is wider than mispricing).
+
+4b. Put-call parity at K=50, T=2w:
+    C(ask)-P(bid) = +0.0500, C(bid)-P(ask) = -0.0500
+
+4c. Chooser replication: chooser ≡ C_3w + P_2w  (Rubinstein 1991, r=0).
+    Chooser direct: bid=22.200 ask=22.300
+    Replicating leg cost  buy 3w-C + buy 2w-P: ask sum = 21.800
+    Replicating leg cost  sell 3w-C + sell 2w-P: bid sum = 21.700
+    ARB 1: BUY chooser @ 22.300, SELL synthetic @ 21.700 → edge -0.600
+    ARB 2: SELL chooser @ 22.200, BUY synthetic @ 21.800 → edge +0.400
+    ★ POSITIVE STATIC ARB: max edge = +0.400/unit (caps 50/50/50, max 50 contracts).
+
+4d. Box spread (3w options): Long P50 + Short C50 = -S + 50 (parity), creates fixed cash payout K-S_T from short stock side.
+    Cost of synthetic short = -P(ask)_50 + C(bid)_50 + S_paid  (we don't have S short).
+    Without bidirectional underlying short, classic box not possible (we can only LONG stock then sell it).
+
+4e. Calendar spread C_3w vs C_2w at K=50: theoretical value of long-3w/short-2w call calendar.
+    Pay 2.350, fair = 2.156, edge = -0.194/unit
+
+4f. Vol arb across strikes (per-strike implied vols vs 2.51 model):
+    Sym                 mid      IV       (σ_model=2.51)
+    AC_50_P          12.025  2.5096
+    AC_50_C          12.025  2.5096
+    AC_35_P           4.340  2.5112
+    AC_40_P           6.525  2.5140
+    AC_45_P           9.075  2.5068
+    AC_60_C           8.825  2.5168
+    AC_50_P_2         9.725  2.4722
+    AC_50_C_2         9.725  2.4722
+
+==========================================================================================
+STEP 5: Sensitivity of GLOBAL OPT to model inputs
+==========================================================================================
+
+5a. Sigma sensitivity (theoretical EV per path, with ×3000 = USD):
+     sigma   TotalEV        USD  KO_fair #changes_vs_2.51
+      2.30   493.275 +1,479,826   0.2489                7
+      2.40   267.076   +801,227   0.2272                7
+      2.51    55.096   +165,287   0.2068                0
+      2.60   186.445   +559,336   0.1907                7
+      2.70   383.096 +1,149,287   0.1764                7
+
+5b. KO fair sensitivity (continuous formula vs discrete):
+    KO_fair=0.123  total EV +52.701  USD $+158,103  KO position q=-500 ev=+13.500
+    KO_fair=0.150  total EV +39.201  USD $+117,603  KO position q=0 ev=+0.000
+    KO_fair=0.175  total EV +39.201  USD $+117,603  KO position q=0 ev=+0.000
+    KO_fair=0.206  total EV +54.701  USD $+164,103  KO position q=500 ev=+15.500
+    KO_fair=0.250  total EV +76.701  USD $+230,103  KO position q=500 ev=+37.500
+
+5c. Time convention (15 trading days = N_3W=60 vs 21 calendar days at 4 obs/day = N_3W=84):
+    15td (4/day)    TotalEV=+55.096  USD $+165,287  KO_fair=0.2068
+    21cd (4/day)    TotalEV=+956.263  USD $+2,868,789  KO_fair=0.1330
+
+==========================================================================================
+STEP 6: Compare 6 strategies under FULL MC (1M paths)
+==========================================================================================
+
+Position vectors:
+Strategy               AC    AC_50_P    AC_50_C    AC_35_P    AC_40_P    AC_45_P    AC_60_C  AC_50_P_2  AC_50_C_2   AC_50_CO   AC_40_BP   AC_45_KO
+GLOBAL_MAX             +0         +0         +0         +0         +0         +0        -50        +50        +50        -50        -50       +500
+MINE_HEDGED            +5        +50        +25         +0         +0         +0        -50        +50        +50        -50        -50       +500
+USER_SAFE              +0        +17        +15         +0         +0         +0         +0        +15         +0        -15        -50        +60
+DROP_60C               +0         +0         +0         +0         +0         +0         +0        +50        +50        -50        -50       +500
+DROP_KO                +0         +0         +0         +0         +0         +0        -50        +50        +50        -50        -50         +0
+HALF_SIZE              +0         +0         +0         +0         +0         +0        -25        +25        +25        -25        -25       +250
+CHOOSER_ARB            +0         +0        +50         +0         +0         +0         +0        +50         +0        -50         +0         +0
+GLOBAL_MAX_PLUS_C         +0         +0        +50         +0         +0         +0        -50        +50        +50        -50        -50       +500
+
+Evaluating each on 1,000,000 paths...
+
+Strategy        Mean PnL      $ Mean  $ SD/trial Sharpe/trial     $ CVaR5   P(>0)
+GLOBAL_MAX       +55.069    +165,207     589,271         0.28  -1,050,290   61.0%
+MINE_HEDGED      +52.854    +158,563     420,407         0.38    -708,615   64.7%
+USER_SAFE        +18.902     +56,707      58,836         0.96     -64,655   83.2%
+DROP_60C         +55.240    +165,721     344,089         0.48    -544,036   68.5%
+DROP_KO          +39.660    +118,979     554,082         0.21  -1,023,934   58.5%
+HALF_SIZE        +27.534     +82,603     294,635         0.28    -525,145   61.0%
+CHOOSER_ARB      +19.671     +59,014     147,023         0.40    -244,254   65.6%
+GLOBAL_MAX_PLUS_C   +54.642    +163,927     347,008         0.47    -551,852   68.2%
+
+Rankings:
+  By E[score]:    DROP_60C > GLOBAL_MAX > GLOBAL_MAX_PLUS_C > MINE_HEDGED > DROP_KO > HALF_SIZE > CHOOSER_ARB > USER_SAFE
+  By Sharpe:      USER_SAFE > DROP_60C > GLOBAL_MAX_PLUS_C > CHOOSER_ARB > MINE_HEDGED > GLOBAL_MAX > HALF_SIZE > DROP_KO
+  By CVaR-5%:     USER_SAFE > CHOOSER_ARB > HALF_SIZE > DROP_60C > GLOBAL_MAX_PLUS_C > MINE_HEDGED > DROP_KO > GLOBAL_MAX
+  By P(profit):   USER_SAFE > DROP_60C > GLOBAL_MAX_PLUS_C > CHOOSER_ARB > MINE_HEDGED > GLOBAL_MAX > HALF_SIZE > DROP_KO
+
+Elapsed: 12.0s
+==========================================================================================
+DONE.  See global_search_v2.md for the report.
+==========================================================================================

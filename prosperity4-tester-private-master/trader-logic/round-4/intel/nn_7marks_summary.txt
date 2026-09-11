@@ -1,0 +1,27 @@
+nn_7marks training, horizon=50, roll=100
+
+=== HYDROGEL_PACK (target: forward 50-tick mid return) ===
+  hold 1: lin R2=-0.0347 sgn=0.478  ridge1 R2=-0.0347 sgn=0.478  ridge10 R2=-0.0347 sgn=0.478  mlp R2=-0.0630 sgn=0.487
+  hold 2: lin R2=-0.0415 sgn=0.461  ridge1 R2=-0.0415 sgn=0.461  ridge10 R2=-0.0414 sgn=0.462  mlp R2=-0.1149 sgn=0.468
+  hold 3: lin R2=+0.0025 sgn=0.509  ridge1 R2=+0.0025 sgn=0.509  ridge10 R2=+0.0025 sgn=0.509  mlp R2=-0.0334 sgn=0.514
+  --- mean OOS ---
+    lin: R2=-0.0246 sgn=0.483
+    ridge1: R2=-0.0246 sgn=0.483
+    ridge10: R2=-0.0245 sgn=0.483
+    mlp: R2=-0.0704 sgn=0.490
+  >>> winner: mlp
+  in-sample mlp: R2=-0.0298 sgn=0.501 rmse=13.244
+  ridge1 top-8 features: micro_dev=+1.19614, sell_Mark22=-1.12657, obi=+0.67865, sell_Mark14=+0.63034, buy_Mark38=-0.49623, buy_Mark22=-0.37021, buy_Mark14=+0.20320, sell_Mark38=-0.16701
+
+=== VELVETFRUIT_EXTRACT (target: forward 50-tick mid return) ===
+  hold 1: lin R2=-0.0491 sgn=0.487  ridge1 R2=-0.0491 sgn=0.487  ridge10 R2=-0.0491 sgn=0.487  mlp R2=-0.0743 sgn=0.460
+  hold 2: lin R2=-0.0087 sgn=0.539  ridge1 R2=-0.0087 sgn=0.539  ridge10 R2=-0.0087 sgn=0.539  mlp R2=-0.1415 sgn=0.456
+  hold 3: lin R2=-0.0111 sgn=0.505  ridge1 R2=-0.0111 sgn=0.505  ridge10 R2=-0.0111 sgn=0.505  mlp R2=-0.0735 sgn=0.508
+  --- mean OOS ---
+    lin: R2=-0.0230 sgn=0.510
+    ridge1: R2=-0.0230 sgn=0.510
+    ridge10: R2=-0.0230 sgn=0.510
+    mlp: R2=-0.0964 sgn=0.475
+  >>> winner: ridge10
+  in-sample ridge10: R2=+0.0207 sgn=0.538 rmse=6.635
+  ridge1 top-8 features: micro_dev=+1.23238, obi=-0.27868, sell_Mark14=+0.21357, buy_Mark55=-0.14698, buy_Mark22=+0.14107, sell_Mark01=+0.13958, sell_Mark55=-0.09743, sell_Mark22=-0.08686

@@ -1,0 +1,305 @@
+C:\Users\gurms\AppData\Local\Programs\Python\Python311\Lib\site-packages\numpy\lib\_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+================================================================================
+ALPHA HUNT — Round 3 80x gap reverse-engineering
+================================================================================
+
+Day 2 prices rows: 120000, trades rows: 1333
+Day 2 timestamp range: 0 .. 999900
+Day 2 unique timestamps: 10000
+Day 2 products: ['VEV_5200', 'VEV_5300', 'VEV_5000', 'VEV_4000', 'VEV_5100', 'VEV_4500', 'VEV_5400', 'VEV_6500', 'VEV_5500', 'HYDROGEL_PACK', 'VELVETFRUIT_EXTRACT', 'VEV_6000']
+
+=== Q1: Theoretical maximum if we capture 100% inside-spread MM each tick ===
+(Day 2, 1000 ticks)
+            product  ticks  mean_spread  mean_edge  mean_rt_vol      max_pnl
+           VEV_4000  10000        20.90      18.90        10.84 2,063,131.00
+      HYDROGEL_PACK  10000        15.73      13.73        12.35 1,708,972.00
+           VEV_4500  10000        15.96      13.96         8.96 1,258,408.00
+VELVETFRUIT_EXTRACT  10000         4.99       2.99        26.51   888,166.00
+           VEV_5000  10000         6.12       4.12        11.37   488,308.00
+           VEV_5100  10000         4.31       2.31        15.44   389,567.00
+           VEV_5200  10000         2.86       0.87        19.30   186,948.00
+           VEV_5300  10000         2.05       0.10        18.62    23,663.00
+           VEV_5400  10000         1.33       0.00        21.18         0.00
+           VEV_5500  10000         1.12       0.00        22.03         0.00
+           VEV_6000  10000         1.00       0.00        22.48         0.00
+           VEV_6500  10000         1.00       0.00        15.48         0.00
+
+TOTAL THEORETICAL MAX (day 2): 7,007,163
+
+=== Q2: Multi-level posting impact estimate ===
+            product  n_takers  avg_qty  single_pnl  multi_pnl    gain
+      HYDROGEL_PACK       311      4.0     5,125.9    9,787.2 4,661.3
+VELVETFRUIT_EXTRACT       477      6.1     2,593.6    7,217.7 4,624.1
+           VEV_4000       128      2.0     1,451.6    2,675.3 1,223.7
+           VEV_5400        80      3.5         0.0      187.9   187.9
+           VEV_5500        94      3.6         0.0      186.9   186.9
+           VEV_6000        95      3.5         0.0      168.5   168.5
+           VEV_6500        95      3.5         0.0      168.5   168.5
+           VEV_5300        45      3.6         2.5      166.1   163.7
+           VEV_5200         8      3.2         6.7       37.2    30.5
+
+Total projected gain from multi-level: 11,415
+
+=== Q3: Order flow imbalance / clustering ===
+            product  n_trades  buy_vol  sell_vol  imbalance  interarrival_cov  signed_ac1
+      HYDROGEL_PACK       311      658       586      0.058             0.978       0.081
+VELVETFRUIT_EXTRACT       477     1765      1130      0.219             0.989      -0.032
+           VEV_4000       128      124       132     -0.031             0.913       0.059
+           VEV_5200         8        0        26     -1.000             1.142      -0.750
+           VEV_5300        45        5       157     -0.938             0.721      -0.001
+           VEV_5400        80        0       283     -1.000             0.888       0.006
+           VEV_5500        94        0       335     -1.000             0.797      -0.054
+           VEV_6000        95        0       337     -1.000             0.787      -0.103
+           VEV_6500        95        0       337     -1.000             0.787      -0.103
+
+=== Q4: Quote prediction R^2 (mid_{t+1} ~ mid_t, mid_{t-1}, mid_{t-2}) ===
+            product  r2_level  r2_change  ar1_coef
+           VEV_6500    1.0000     1.0000       NaN
+           VEV_6000    1.0000     1.0000       NaN
+           VEV_4000    0.9937     0.0875    0.9965
+           VEV_5500    0.9868     0.0653    0.9929
+           VEV_5400    0.9927     0.0635    0.9961
+           VEV_4500    0.9949     0.0509    0.9973
+           VEV_5300    0.9952     0.0465    0.9975
+VELVETFRUIT_EXTRACT    0.9956     0.0246    0.9978
+      HYDROGEL_PACK    0.9954     0.0157    0.9976
+           VEV_5200    0.9964     0.0138    0.9982
+           VEV_5000    0.9963     0.0082    0.9981
+           VEV_5100    0.9965     0.0082    0.9982
+
+=== Q5: Cross-product hedge / theta carry analysis ===
+ voucher  mean_voucher_mid  mean_underlying_mid  intrinsic_check  empirical_delta  theta_per_tick  carry_per_tick_full_size  carry_per_1k_ticks
+VEV_4000         1255.3973            5255.3921           0.0052           0.7326          0.0028                    0.8251            825.0825
+VEV_4500          755.4018            5255.3921           0.0097           0.6597          0.0029                    0.8551            855.0855
+VEV_5000          258.5447            5255.3921           3.1526           0.6578          0.0027                    0.7951            795.0795
+VEV_5100          167.3254            5255.3921          11.9333           0.5949          0.0023                    0.6751            675.0675
+VEV_5200           94.0469            5255.3921          38.6548           0.4477          0.0015                    0.4500            450.0450
+VEV_5300           44.4781            5255.3921          44.4781           0.2734          0.0005                    0.1500            150.0150
+VEV_5400           13.7343            5255.3921          13.7343           0.1220          0.0003                    0.0900             90.0090
+VEV_5500            5.2942            5255.3921           5.2942           0.0468          0.0001                    0.0150             15.0015
+
+=== Q6: Timing analysis -- when is alpha concentrated? ===
+Taker activity by 10k-ts bucket (top 10):
+        count  sum
+bucket            
+280000     27  100
+270000     26  109
+970000     26   89
+40000      25  127
+690000     23   96
+940000     23  113
+820000     22   87
+580000     21   82
+100000     20   74
+350000     20   90
+
+Spread widening (HYDROGEL_PACK, top 10 wide ticks):
+ timestamp  bid_price_1  ask_price_1  spread  mid_price
+      4700        10017        10034      17    10025.5
+      5600        10012        10029      17    10020.5
+      6600        10011        10028      17    10019.5
+      7400        10008        10025      17    10016.5
+     10900        10008        10025      17    10016.5
+     11300        10012        10029      17    10020.5
+     29800         9997        10014      17    10005.5
+     32900        10002        10019      17    10010.5
+    119900         9993        10010      17    10001.5
+    130400         9998        10015      17    10006.5
+
+=== Q7: HYDROGEL_PACK theoretical MM ceiling ===
+Mean spread: 15.73
+Mean best vol (min(bid,ask)): 12.35
+Number of takers: 311
+Mean taker qty: 4.00
+Total taker volume: 1244
+
+Upper bound (100% capture, full edge): 17,086
+Realistic (50% capture, half-edge): 4,272
+
+Per-tick MM upper if we round-trip 200 contracts: 2,747
+× 1000 ticks: 2,747,000
+
+=== Q8: Empirical fill-rate analysis ===
+            product  avail_book_vol  taker_vol  fill_pressure  n_takers  ticks  takers_per_tick
+      HYDROGEL_PACK          248627       1244         0.0050       311  10000           0.0311
+VELVETFRUIT_EXTRACT          755832       2895         0.0038       477  10000           0.0477
+           VEV_4000          218168        256         0.0012       128  10000           0.0128
+           VEV_6500          310180        337         0.0011        95  10000           0.0095
+           VEV_5500          445703        335         0.0008        94  10000           0.0094
+           VEV_6000          450274        337         0.0007        95  10000           0.0095
+           VEV_5400          437181        283         0.0006        80  10000           0.0080
+           VEV_5300          408114        162         0.0004        45  10000           0.0045
+           VEV_5200          453413         26         0.0001         8  10000           0.0008
+           VEV_4500          180131          0         0.0000         0  10000           0.0000
+           VEV_5000          307518          0         0.0000         0  10000           0.0000
+           VEV_5100          387737          0         0.0000         0  10000           0.0000
+
+================================================================================
+SUMMARY: top alpha candidates
+================================================================================
+================================================================================
+FOLLOW-UP ANALYSIS
+================================================================================
+
+=== Trade-price vs mid (signed direction) by product ===
+            product  n_trades  n>ask  n=ask  n=bid  n<bid  n_inside  vol_at_ask  vol_at_bid
+VELVETFRUIT_EXTRACT       477      0    280    195      2         0        1765        1130
+           VEV_4000       128      0     64     64      0         0         124         132
+      HYDROGEL_PACK       311      0    165    146      0         0         658         586
+           VEV_5400        80      0      0     80      0         0           0         283
+           VEV_5500        94      0      0     94      0         0           0         335
+           VEV_6000        95      0      0     95      0         0           0         337
+           VEV_6500        95      0      0     95      0         0           0         337
+           VEV_5300        45      0      0     44      0         1           0         157
+           VEV_5200         8      0      0      8      0         0           0          26
+
+=== Underlying drift / mid trajectory (open vs close mid) ===
+            product  open_mid  close_mid  drift    min     max     stdev
+           VEV_5200     104.0      119.0   15.0   64.0   122.5 11.503531
+           VEV_5300      53.0       58.0    5.0   26.5    60.5  7.059952
+           VEV_5000     270.0      296.5   26.5  213.5   300.5 16.153086
+           VEV_4000    1267.5     1295.0   27.5 1207.0  1300.0 17.000583
+           VEV_5100     179.0      201.5   22.5  127.5   205.5 14.810434
+           VEV_4500     767.0      795.5   28.5  708.5   799.5 16.992788
+           VEV_5400      17.0       20.0    3.0    6.5    21.5  3.006519
+           VEV_6500       0.5        0.5    0.0    0.5     0.5  0.000000
+           VEV_5500       6.5        7.0    0.5    2.5     9.5  1.395078
+      HYDROGEL_PACK   10011.0    10010.0   -1.0 9891.0 10051.0 31.620580
+VELVETFRUIT_EXTRACT    5267.5     5295.5   28.0 5207.0  5300.0 16.984490
+           VEV_6000       0.5        0.5    0.0    0.5     0.5  0.000000
+
+=== OTM voucher books (VEV_5400, 5500, 6000, 6500) ===
+
+VEV_5400:
+  bid_price_1 stats: min=6, max=21, mean=13.07
+  ask_price_1 stats: min=7, max=22, mean=14.40
+  bid_volume_1 mean: 21.9, ask_volume_1 mean: 21.9
+  taker price mean: 12.86, qty sum: 283
+  taker prices unique: [np.float64(7.0), np.float64(8.0), np.float64(9.0), np.float64(10.0), np.float64(11.0), np.float64(12.0), np.float64(13.0), np.float64(14.0), np.float64(15.0), np.float64(16.0)]
+
+VEV_5500:
+  bid_price_1 stats: min=2, max=9, mean=4.74
+  ask_price_1 stats: min=3, max=10, mean=5.85
+  bid_volume_1 mean: 22.3, ask_volume_1 mean: 22.3
+  taker price mean: 4.78, qty sum: 335
+  taker prices unique: [np.float64(2.0), np.float64(3.0), np.float64(4.0), np.float64(5.0), np.float64(6.0), np.float64(7.0), np.float64(8.0)]
+
+VEV_6000:
+  bid_price_1 stats: min=0, max=0, mean=0.00
+  ask_price_1 stats: min=1, max=1, mean=1.00
+  bid_volume_1 mean: 22.5, ask_volume_1 mean: 22.5
+  taker price mean: 0.00, qty sum: 337
+  taker prices unique: [np.float64(0.0)]
+
+VEV_6500:
+  bid_price_1 stats: min=0, max=0, mean=0.00
+  ask_price_1 stats: min=1, max=1, mean=1.00
+  bid_volume_1 mean: 15.5, ask_volume_1 mean: 15.5
+  taker price mean: 0.00, qty sum: 337
+  taker prices unique: [np.float64(0.0)]
+
+=== Final mid prices (proxies for settlement) on day 2 ===
+            product  mid_price
+      HYDROGEL_PACK    10010.0
+VELVETFRUIT_EXTRACT     5295.5
+           VEV_4000     1295.0
+           VEV_4500      795.5
+           VEV_5000      296.5
+           VEV_5100      201.5
+           VEV_5200      119.0
+           VEV_5300       58.0
+           VEV_5400       20.0
+           VEV_5500        7.0
+           VEV_6000        0.5
+           VEV_6500        0.5
+
+=== Voucher PAYOFF analysis (assuming underlying = VELVETFRUIT_EXTRACT) ===
+VELVETFRUIT_EXTRACT day-end mid: 5295.5, range [5207.0, 5300.0]
+ voucher  strike  voucher_mid_avg  voucher_mid_final  underlying_final  intrinsic_at_close  edge_if_short_voucher_at_avg
+VEV_4000    4000          1255.40            1295.00           5295.50             1295.50                        -40.10
+VEV_4500    4500           755.40             795.50           5295.50              795.50                        -40.10
+VEV_5000    5000           258.54             296.50           5295.50              295.50                        -36.96
+VEV_5100    5100           167.33             201.50           5295.50              195.50                        -28.17
+VEV_5200    5200            94.05             119.00           5295.50               95.50                         -1.45
+VEV_5300    5300            44.48              58.00           5295.50                0.00                         44.48
+VEV_5400    5400            13.73              20.00           5295.50                0.00                         13.73
+VEV_5500    5500             5.29               7.00           5295.50                0.00                          5.29
+VEV_6000    6000             0.50               0.50           5295.50                0.00                          0.50
+VEV_6500    6500             0.50               0.50           5295.50                0.00                          0.50
+================================================================================
+BUY-AND-HOLD PNL across all 3 days, by product
+================================================================================
+
+--- Day 0 ---
+            product     open   close  drift  size  buy_and_hold_pnl
+           VEV_6500     0.50    0.50   0.00   300              0.00
+           VEV_6000     0.50    0.50   0.00   300              0.00
+           VEV_5500     8.50    7.50  -1.00   300           -300.00
+VELVETFRUIT_EXTRACT  5250.00 5244.00  -6.00   200          -1200.00
+           VEV_5200   101.50   95.50  -6.00   300          -1800.00
+           VEV_4500   750.00  744.00  -6.00   300          -1800.00
+           VEV_4000  1250.00 1244.00  -6.00   300          -1800.00
+           VEV_5300    53.00   47.00  -6.00   300          -1800.00
+           VEV_5400    23.00   16.50  -6.50   300          -1950.00
+           VEV_5000   257.00  250.00  -7.00   300          -2100.00
+           VEV_5100   171.50  164.00  -7.50   300          -2250.00
+      HYDROGEL_PACK 10000.00 9958.00 -42.00   200          -8400.00
+  Total long-everything-at-open PnL day 0: -23,400
+  OTM short (sell @ open): 4,050
+
+--- Day 1 ---
+            product    open    close  drift  size  buy_and_hold_pnl
+      HYDROGEL_PACK 9958.00 10015.00  57.00   200          11400.00
+           VEV_4000 1245.00  1265.50  20.50   300           6150.00
+           VEV_4500  745.00   765.50  20.50   300           6150.00
+           VEV_5000  251.00   268.50  17.50   300           5250.00
+VELVETFRUIT_EXTRACT 5245.00  5265.50  20.50   200           4100.00
+           VEV_5100  165.00   177.50  12.50   300           3750.00
+           VEV_5200   95.50   102.50   7.00   300           2100.00
+           VEV_5300   47.00    52.00   5.00   300           1500.00
+           VEV_5400   16.50    17.00   0.50   300            150.00
+           VEV_6000    0.50     0.50   0.00   300              0.00
+           VEV_6500    0.50     0.50   0.00   300              0.00
+           VEV_5500    7.50     6.50  -1.00   300           -300.00
+  Total long-everything-at-open PnL day 1: 40,250
+  OTM short (sell @ open): -1,350
+
+--- Day 2 ---
+            product     open    close  drift  size  buy_and_hold_pnl
+           VEV_4500   767.00   795.50  28.50   300           8550.00
+           VEV_4000  1267.50  1295.00  27.50   300           8250.00
+           VEV_5000   270.00   296.50  26.50   300           7950.00
+           VEV_5100   179.00   201.50  22.50   300           6750.00
+VELVETFRUIT_EXTRACT  5267.50  5295.50  28.00   200           5600.00
+           VEV_5200   104.00   119.00  15.00   300           4500.00
+           VEV_5300    53.00    58.00   5.00   300           1500.00
+           VEV_5400    17.00    20.00   3.00   300            900.00
+           VEV_5500     6.50     7.00   0.50   300            150.00
+           VEV_6000     0.50     0.50   0.00   300              0.00
+           VEV_6500     0.50     0.50   0.00   300              0.00
+      HYDROGEL_PACK 10011.00 10010.00  -1.00   200           -200.00
+  Total long-everything-at-open PnL day 2: 43,950
+  OTM short (sell @ open): -2,550
+
+================================================================================
+STRATEGY 1: BUY-AND-HOLD ALL DELTA-1 LONGS at OPEN, day 2
+================================================================================
+  long 300 VEV_4000 from 1267.5 to 1295.0: 8,250
+  long 300 VEV_4500 from 767.0 to 795.5: 8,550
+  long 300 VEV_5000 from 270.0 to 296.5: 7,950
+  long 300 VEV_5100 from 179.0 to 201.5: 6,750
+  long 300 VEV_5200 from 104.0 to 119.0: 4,500
+  long 200 VELVETFRUIT_EXTRACT from 5267.5 to 5295.5: 5,600
+  TOTAL: 41,600
+
+STRATEGY 2: short OTM vouchers (open ALL with size limits, sell to taker bids)
+Assumption: each OTM seller-only flow lets us short at the bid, voucher decays to 0.
+  short 300 VEV_5300 from avg 44.48 to close 58.00: -4,057
+  short 300 VEV_5400 from avg 13.73 to close 20.00: -1,880
+  short 300 VEV_5500 from avg 5.29 to close 7.00: -512
+  short 300 VEV_6000 from avg 0.50 to close 0.50: 0
+  short 300 VEV_6500 from avg 0.50 to close 0.50: 0
+  TOTAL: -6,448
+
+GRAND TOTAL: long-delta-1 + short-OTM = $35,152

@@ -1,0 +1,6 @@
+edge=5 | def=Total profit: 261,670 | imc=Total profit: 247,222
+edge=7 | def=Total profit: 261,670 | imc=Total profit: 247,222
+edge=10 | def=Total profit: 261,670 | imc=Total profit: 247,222
+edge=12 | def=Total profit: 261,670 | imc=Total profit: 247,222
+edge=15 | def=Total profit: 261,670 | imc=Total profit: 247,222
+no-5200-carve | def=Total profit: 261,670 | imc=Total profit: 247,222

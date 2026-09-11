@@ -1,0 +1,106 @@
+[
+  {
+    "qs": 10,
+    "sc": 3.0,
+    "cl": 1.0,
+    "sl": 1,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 25,
+    "sc": 3.0,
+    "cl": 1.0,
+    "sl": 1,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 50,
+    "sc": 3.0,
+    "cl": 1.0,
+    "sl": 1,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 75,
+    "sc": 3.0,
+    "cl": 1.0,
+    "sl": 1,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 100,
+    "sc": 3.0,
+    "cl": 1.0,
+    "sl": 1,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 150,
+    "sc": 3.0,
+    "cl": 1.0,
+    "sl": 1,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 25,
+    "sc": 1.0,
+    "cl": 1.0,
+    "sl": 1,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 25,
+    "sc": 2.0,
+    "cl": 1.0,
+    "sl": 1,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 25,
+    "sc": 5.0,
+    "cl": 1.0,
+    "sl": 1,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 25,
+    "sc": 3.0,
+    "cl": 0.5,
+    "sl": 1,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 25,
+    "sc": 3.0,
+    "cl": 2.0,
+    "sl": 1,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 25,
+    "sc": 3.0,
+    "cl": 1.0,
+    "sl": 0.5,
+    "total_3day": null,
+    "hp_per_day": []
+  },
+  {
+    "qs": 25,
+    "sc": 3.0,
+    "cl": 1.0,
+    "sl": 2,
+    "total_3day": null,
+    "hp_per_day": []
+  }
+]

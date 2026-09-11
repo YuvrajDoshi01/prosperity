@@ -1,0 +1,4 @@
+level,bid_price_present_pct,ask_price_present_pct,bid_size_positive_pct,ask_size_positive_pct,avg_bid_size,avg_ask_size
+1,1.0,1.0,1.0,1.0,12.416,12.337
+2,1.0,1.0,1.0,1.0,24.85,24.697
+3,0.014,0.026,0.014,0.026,0.34,0.655

@@ -1,0 +1,4 @@
+v5_obi_t05_s5: Total profit: 103,984
+v5_obi_t06_s5: Total profit: 129,072
+v5_obi_t07_s5: Total profit: 133,730
+v5_obi_t08_s5: Total profit: 130,821
